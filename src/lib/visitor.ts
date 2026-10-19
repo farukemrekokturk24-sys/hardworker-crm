@@ -2,7 +2,8 @@ import "server-only";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import { prisma } from "./prisma";
-import { AUTH_SECRET } from "./env";
+import { getAuthSecret } from "./secret";
+import { VISITOR_COOKIE as COOKIE } from "./cookies";
 
 /**
  * Ziyaretçi oturumu — "fiyat görmek için kayıt ol" akışının arkasındaki katman.
@@ -10,9 +11,7 @@ import { AUTH_SECRET } from "./env";
  * imzalı çerez o lead'i işaret eder ve fiyatları açar.
  */
 
-const SECRET = AUTH_SECRET;
-
-export const VISITOR_COOKIE = "hw_visitor";
+export { VISITOR_COOKIE } from "./cookies";
 const MAX_AGE = 60 * 60 * 24 * 180; // 180 gün
 
 export type Visitor = { lid: string; name: string; phone: string };
@@ -22,9 +21,9 @@ export async function signVisitor(v: Visitor) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE}s`)
-    .sign(SECRET);
+    .sign(await getAuthSecret());
 
-  (await cookies()).set(VISITOR_COOKIE, token, {
+  (await cookies()).set(COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -34,10 +33,10 @@ export async function signVisitor(v: Visitor) {
 }
 
 export async function getVisitor(): Promise<Visitor | null> {
-  const token = (await cookies()).get(VISITOR_COOKIE)?.value;
+  const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, await getAuthSecret());
     if (!payload.lid) return null;
     return {
       lid: payload.lid as string,
@@ -61,7 +60,7 @@ export async function canSeePrices(): Promise<boolean> {
 }
 
 export async function clearVisitor() {
-  (await cookies()).delete(VISITOR_COOKIE);
+  (await cookies()).delete(COOKIE);
 }
 
 /** Ziyaretçinin baktığı daire/proje kaydı — satış ekibine sıcak sinyal */

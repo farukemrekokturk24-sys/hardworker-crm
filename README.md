@@ -19,7 +19,7 @@ ziyaretçinin hangi projelere/dairelere baktığı satış ekibine sinyal olarak
 ## Canlı demo
 
 Projeyi müşterinin gezebileceği bir adrese almak için → **[DEPLOY.md](DEPLOY.md)**
-(Vercel + Neon Postgres, tamamı web arayüzünden, ~10 dakika).
+(Vercel + Neon Postgres, tamamı tıklamayla, elle değer girmeden, ~5 dakika).
 
 ## Yerel kurulum
 
@@ -137,9 +137,11 @@ Dağıtım sırasında `npm run build` sırasıyla şunları yapar: `prisma gene
 `prisma migrate deploy` (tabloları kurar) → `prisma/seed.ts` (veritabanı boşsa
 örnek veriyi yükler) → `next build`.
 
+Oturum imzalama anahtarı `AUTH_SECRET` ile verilebilir; verilmezse uygulama
+ilk açılışta rastgele bir anahtar üretip kendi veritabanında saklar.
+
 Gerçek kullanıma geçmeden önce:
 - Panelden **Kullanıcılar** bölümünde demo şifrelerini değiştirin
-- `AUTH_SECRET`'i güçlü bir değerle ayarlayın
 - `public/media` (52 MB) içeriğini bir CDN'e taşımayı değerlendirin
 
 ## Sonraki sürüm adayları

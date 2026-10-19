@@ -3,11 +3,10 @@ import { cookies, headers } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
-import { AUTH_SECRET } from "./env";
+import { getAuthSecret } from "./secret";
+import { STAFF_COOKIE as COOKIE } from "./cookies";
 
-const SECRET = AUTH_SECRET;
-
-export const STAFF_COOKIE = "hw_session";
+export { STAFF_COOKIE } from "./cookies";
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 gün
 
 export type SessionUser = {
@@ -30,12 +29,12 @@ async function sign(user: SessionUser) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE}s`)
-    .sign(SECRET);
+    .sign(await getAuthSecret());
 }
 
 export async function verifyToken(token: string): Promise<SessionUser | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, await getAuthSecret());
     if (!payload.uid) return null;
     return {
       uid: payload.uid as string,
@@ -50,7 +49,7 @@ export async function verifyToken(token: string): Promise<SessionUser | null> {
 }
 
 export async function getSession(): Promise<SessionUser | null> {
-  const token = (await cookies()).get(STAFF_COOKIE)?.value;
+  const token = (await cookies()).get(COOKIE)?.value;
   if (!token) return null;
   return verifyToken(token);
 }
@@ -80,7 +79,7 @@ export async function login(
     avatar: user.avatar,
   };
 
-  (await cookies()).set(STAFF_COOKIE, await sign(sessionUser), {
+  (await cookies()).set(COOKIE, await sign(sessionUser), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -98,7 +97,7 @@ export async function login(
 }
 
 export async function logout() {
-  (await cookies()).delete(STAFF_COOKIE);
+  (await cookies()).delete(COOKIE);
 }
 
 export async function logActivity(
