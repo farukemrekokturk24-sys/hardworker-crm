@@ -4,10 +4,17 @@ import { prisma } from "@/lib/prisma";
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hardworkercyprus.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const projects = await prisma.project.findMany({
-    where: { published: true },
-    select: { slug: true, updatedAt: true },
-  });
+  // Build sırasında veritabanı henüz bağlı olmayabilir; sitemap yüzünden
+  // dağıtımın düşmemesi için sessizce statik sayfalara düşülür.
+  let projects: { slug: string; updatedAt: Date }[] = [];
+  try {
+    projects = await prisma.project.findMany({
+      where: { published: true },
+      select: { slug: true, updatedAt: true },
+    });
+  } catch {
+    projects = [];
+  }
 
   const staticPages = [
     { path: "", priority: 1 },

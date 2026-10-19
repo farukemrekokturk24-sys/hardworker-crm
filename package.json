@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start -p 3100",
+    "build": "prisma generate && prisma migrate deploy && tsx prisma/seed.ts && next build",
+    "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force",
-    "db:studio": "prisma studio"
+    "db:reset": "FORCE_SEED=1 tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

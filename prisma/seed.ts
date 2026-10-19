@@ -77,6 +77,18 @@ async function seedUnits(projectId: string, units: SeedUnit[]) {
 }
 
 async function main() {
+  // Yayındaki veritabanında seed her dağıtımda yeniden çalışır; veri varsa
+  // dokunmayız, aksi hâlde müşterinin bıraktığı lead'ler silinirdi.
+  // Sıfırlamak için: FORCE_SEED=1 npm run db:seed
+  if (process.env.FORCE_SEED !== "1") {
+    const existing = await prisma.project.count();
+    if (existing > 0) {
+      console.log(`↷ Veritabanında ${existing} proje var, seed atlandı.`);
+      console.log("  Sıfırlamak için: FORCE_SEED=1 npm run db:seed");
+      return;
+    }
+  }
+
   console.log("🧹 Mevcut veriler temizleniyor...");
   await prisma.$transaction([
     prisma.installment.deleteMany(),
@@ -560,6 +572,15 @@ async function main() {
 
 main()
   .catch((e) => {
+    // Veritabanına ulaşılamıyorsa build'i düşürmek yerine net bir uyarı bırak.
+    const msg = String(e?.message ?? e);
+    const unreachable =
+      e?.code === "P1001" || e?.code === "P1000" || /Can't reach database/i.test(msg);
+    if (unreachable) {
+      console.warn("⚠️  Veritabanına ulaşılamadı, seed atlandı.");
+      console.warn("   Vercel'de Postgres bağlantısının (DATABASE_URL) ekli olduğundan emin olun.");
+      return;
+    }
     console.error(e);
     process.exit(1);
   })

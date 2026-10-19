@@ -1,12 +1,12 @@
 // Hardworker Construction — CRM & Web Sitesi veri modeli
-// Geliştirme: SQLite · Yayın: PostgreSQL (provider değiştirilerek taşınır)
+// Veritabanı: PostgreSQL (Vercel/Neon/Supabase)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

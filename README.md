@@ -11,19 +11,30 @@ ziyaretçinin hangi projelere/dairelere baktığı satış ekibine sinyal olarak
 
 - **Next.js 16** (App Router, Turbopack) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** + özel tasarım sistemi (marka mavisi `#126FB2`)
-- **Prisma** ORM — geliştirmede SQLite, yayında PostgreSQL
+- **Prisma** ORM + **PostgreSQL** (Neon / Supabase / Vercel Postgres)
 - **jose** (JWT çerez oturumu) + **bcryptjs**
 - **Recharts** (grafikler), **lucide-react** (ikonlar)
 - Server Actions tabanlı mutasyonlar, `zod` ile doğrulama
 
-## Kurulum
+## Canlı demo
+
+Projeyi müşterinin gezebileceği bir adrese almak için → **[DEPLOY.md](DEPLOY.md)**
+(Vercel + Neon Postgres, tamamı web arayüzünden, ~10 dakika).
+
+## Yerel kurulum
+
+Bir PostgreSQL veritabanı gerekir (Neon'un ücretsiz paketi yeterlidir).
 
 ```bash
 npm install
-npx prisma migrate dev     # veritabanını oluştur
+cp .env.example .env       # DATABASE_URL ve AUTH_SECRET'i doldurun
+npx prisma migrate deploy  # tabloları oluştur
 npm run db:seed            # gerçek proje verisi + örnek lead'ler
 npm run dev                # http://localhost:3000
 ```
+
+> `db:seed` veritabanı boş değilse hiçbir şey yapmaz. Sıfırlamak için:
+> `npm run db:reset`
 
 ### Panel girişi
 
@@ -120,11 +131,16 @@ fiyat listesi dosyalarından alınmıştır.
 
 ## Yayına alma
 
-1. Supabase/Neon'da PostgreSQL oluştur → `.env` içindeki `DATABASE_URL`'i değiştir.
-2. `prisma/schema.prisma` içinde `provider = "postgresql"` yap, `npx prisma migrate deploy` çalıştır.
-3. `AUTH_SECRET` ve admin şifrelerini güncelle, `NEXT_PUBLIC_SITE_URL`'i canlı adrese çevir.
-4. `public/media` içeriğini CDN'e ya da Supabase Storage'a taşımayı değerlendir.
-5. Vercel'e deploy et.
+Adım adım rehber: **[DEPLOY.md](DEPLOY.md)**
+
+Dağıtım sırasında `npm run build` sırasıyla şunları yapar: `prisma generate` →
+`prisma migrate deploy` (tabloları kurar) → `prisma/seed.ts` (veritabanı boşsa
+örnek veriyi yükler) → `next build`.
+
+Gerçek kullanıma geçmeden önce:
+- Panelden **Kullanıcılar** bölümünde demo şifrelerini değiştirin
+- `AUTH_SECRET`'i güçlü bir değerle ayarlayın
+- `public/media` (52 MB) içeriğini bir CDN'e taşımayı değerlendirin
 
 ## Sonraki sürüm adayları
 

@@ -12,10 +12,12 @@
     },
     {
       "name": "hardworker-prod",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "npx",
       "runtimeArgs": [
-        "run",
-        "start"
+        "next",
+        "start",
+        "-p",
+        "3100"
       ],
       "port": 3100
     }
