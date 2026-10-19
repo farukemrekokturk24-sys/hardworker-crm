@@ -3,9 +3,9 @@
 Kuzey Kıbrıs Gazimağusa merkezli Hardworker Construction Ltd. için geliştirilen
 kurumsal web sitesi ve satış yönetim paneli (CRM).
 
-Sitenin can damarı **fiyat kilidi**dir: ziyaretçi daire fiyatlarını görmek için
-ad ve telefon bırakır, bu kayıt anında CRM'de bir lead'e dönüşür ve ziyaretçinin
-hangi projelere/dairelere baktığı satış ekibine sinyal olarak düşer.
+Sitenin can damarı **fiyat kaydı**dır: ziyaretçi daire fiyatlarını görmek için
+yalnızca telefon numarasını bırakır, bu kayıt anında CRM'de bir lead'e dönüşür ve
+ziyaretçinin hangi projelere/dairelere baktığı satış ekibine sinyal olarak düşer.
 
 ## Teknoloji
 
@@ -38,20 +38,24 @@ Panel adresi: `/panel/giris`
 > **Yayına almadan önce** şifreleri değiştirin ve `.env` içindeki `AUTH_SECRET`
 > değerini güçlü, rastgele bir değerle güncelleyin.
 
-## Fiyat kilidi (lead gate) nasıl çalışır?
+## Fiyat kaydı (lead gate) nasıl çalışır?
 
-1. Kayıtsız ziyaretçi fiyat yerine bulanık bir maske ve "Fiyatı gör" bağlantısı görür.
-   **Gerçek fiyatlar sunucudan hiç gönderilmez** — sayfa kaynağından da okunamaz.
-2. Tıklayınca ad + telefon isteyen modal açılır (ülke, amaç, e-posta opsiyonel).
+Akış kasıtlı olarak tek adımdır — sürtünme ne kadar azsa dönüşüm o kadar yüksektir.
+
+1. Kayıtsız ziyaretçi fiyat yerine sade bir **"Fiyatı gör →"** bağlantısı görür.
+   Kilit ikonu ya da bulanık maske yoktur. **Gerçek fiyatlar sunucudan hiç
+   gönderilmez** — sayfa kaynağından da okunamaz.
+2. Tıklayınca tek zorunlu alanı **telefon numarası** olan bir form açılır.
+   Ad alanı isteğe bağlıdır; boş bırakılırsa CRM'de numara görünür ad olarak kullanılır.
 3. Form gönderilince:
-   - `Lead` kaydı açılır (kaynak: `PRICE_GATE`), bütçe/amaç/proje sinyallerine göre
-     puanlanır ve sıcak/ılık/soğuk olarak sınıflanır.
+   - `Lead` kaydı açılır (kaynak: `PRICE_GATE`), bakılan proje/daire sinyallerine
+     göre puanlanır ve sıcak/ılık/soğuk olarak sınıflanır.
    - Aynı telefon tekrar kayıt olursa yeni lead açılmaz, mevcut kayıt zenginleşir.
    - İmzalı `hw_visitor` çerezi yazılır; fiyatlar 180 gün boyunca açık kalır.
 4. Ziyaretçinin gezdiği her proje ve daire `UnitView` olarak kaydedilir; satış
    danışmanı lead detayındaki **Site Hareketleri** sekmesinden görür.
 
-Kilit, panelden **Ayarlar → Fiyat Kilidi** bölümünden kapatılabilir.
+Fiyat kaydı, panelden **Ayarlar → Fiyat Kilidi** bölümünden tamamen kapatılabilir.
 
 ## Yapı
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { usePriceGate } from "./price-gate";
 
 /** Özet çubuğundaki başlangıç fiyatı — kayıtsız ziyaretçide kilitli. */
@@ -25,13 +25,13 @@ export function SummaryPrice({
     <button
       type="button"
       onClick={() => open({ projectId, projectName })}
-      className="inline-flex items-center gap-1.5 text-brand hover:text-brand-600 transition-colors"
-      title="Fiyatı görmek için kayıt olun"
+      className="group inline-flex items-center gap-1.5 text-brand hover:text-brand-600 transition-colors"
+      title="Fiyatı görmek için telefon numaranızı bırakın"
     >
-      <Lock size={13} />
-      <span className="underline decoration-dotted decoration-brand/40 underline-offset-4">
-        Kayıt ol
+      <span className="underline decoration-brand/35 underline-offset-4">
+        Fiyatı gör
       </span>
+      <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
     </button>
   );
 }

@@ -5,10 +5,10 @@ import {
   useCallback, useRef, useMemo,
 } from "react";
 import { createPortal } from "react-dom";
-import { Lock, X, ShieldCheck, Loader2, CheckCircle2 } from "lucide-react";
+import { X, ShieldCheck, Loader2, CheckCircle2, ArrowRight } from "lucide-react";
 import { registerForPrices, type RegisterState } from "@/app/(site)/actions";
 import { Button } from "@/components/ui/button";
-import { Field, inputClass, selectClass } from "@/components/ui/primitives";
+import { Field, inputClass } from "@/components/ui/primitives";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------- Context */
@@ -77,11 +77,6 @@ export function PriceGateProvider({
 }
 
 /* --------------------------------------------------------------- Modal */
-
-const COUNTRIES = [
-  "KKTC", "Türkiye", "İngiltere", "Almanya", "Rusya", "İsrail",
-  "İran", "Ukrayna", "Polonya", "Diğer",
-];
 
 function PriceGateModal({
   projectId,
@@ -165,21 +160,18 @@ function PriceGateModal({
           </div>
         ) : (
           <form action={action} className="px-6 sm:px-7 pb-7 pt-5 sm:pt-8">
-            <div className="h-12 w-12 rounded-2xl bg-brand-50 text-brand grid place-items-center mb-4">
-              <Lock size={22} />
-            </div>
-
             <h2 id="gate-title" className="t-h2 text-ink text-balance">
-              Fiyatları görmek için kayıt olun
+              Fiyat listesini açalım
             </h2>
             <p className="text-sm text-muted mt-2 leading-relaxed">
               {projectName ? (
                 <>
+                  Telefon numaranızı bırakın,{" "}
                   <span className="font-semibold text-ink-soft">{projectName}</span>{" "}
-                  güncel fiyat listesi, kat planları ve ödeme seçenekleri anında açılır.
+                  fiyat listesi hemen açılsın.
                 </>
               ) : (
-                "Tüm projelerin güncel fiyat listesi, kat planları ve ödeme seçenekleri anında açılır."
+                "Telefon numaranızı bırakın, tüm fiyat listesi hemen açılsın."
               )}
             </p>
 
@@ -187,79 +179,27 @@ function PriceGateModal({
             {unitId && <input type="hidden" name="unitId" value={unitId} />}
 
             <div className="space-y-3.5 mt-6">
-              <Field label="Ad Soyad" required error={state.fieldErrors?.name}>
-                <input
-                  name="name"
-                  required
-                  autoComplete="name"
-                  placeholder="Adınız ve soyadınız"
-                  className={inputClass}
-                />
-              </Field>
-
-              <Field
-                label="Telefon"
-                required
-                error={state.fieldErrors?.phone}
-                hint="WhatsApp üzerinden de ulaşabilmemiz için"
-              >
+              <Field label="Telefon" required error={state.fieldErrors?.phone}>
                 <input
                   name="phone"
                   type="tel"
                   required
+                  autoFocus
                   inputMode="tel"
                   autoComplete="tel"
                   placeholder="+90 5XX XXX XX XX"
-                  className={inputClass}
+                  className={cn(inputClass, "!h-13 !text-base")}
                 />
               </Field>
 
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Ülke">
-                  <select name="country" className={selectClass} defaultValue="">
-                    <option value="">Seçiniz</option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Amacınız">
-                  <select name="purpose" className={selectClass} defaultValue="">
-                    <option value="">Seçiniz</option>
-                    <option value="YATIRIM">Yatırım</option>
-                    <option value="OTURUM">Oturum</option>
-                    <option value="KIRALAMA">Kiralama geliri</option>
-                  </select>
-                </Field>
-              </div>
-
-              <Field label="E-posta" error={state.fieldErrors?.email}>
+              <Field label="Adınız" hint="İsteğe bağlı — size nasıl hitap edelim?">
                 <input
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="ornek@email.com (opsiyonel)"
+                  name="name"
+                  autoComplete="name"
+                  placeholder="Opsiyonel"
                   className={inputClass}
                 />
               </Field>
-
-              <label className="flex items-start gap-2.5 cursor-pointer pt-1">
-                <input
-                  type="checkbox"
-                  name="kvkk"
-                  defaultChecked
-                  className="mt-0.5 h-4 w-4 rounded border-border-strong text-brand focus:ring-brand/30 accent-[var(--brand)]"
-                />
-                <span className="text-xs text-muted leading-relaxed">
-                  Kişisel verilerimin satış süreci kapsamında işlenmesini ve benimle
-                  iletişime geçilmesini kabul ediyorum.
-                </span>
-              </label>
-              {state.fieldErrors?.kvkk && (
-                <p className="text-xs font-medium text-rose-600">{state.fieldErrors.kvkk}</p>
-              )}
             </div>
 
             {state.error && !state.fieldErrors && (
@@ -271,16 +211,18 @@ function PriceGateModal({
             <Button type="submit" size="lg" fullWidth className="mt-6" disabled={pending}>
               {pending ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" /> Gönderiliyor...
+                  <Loader2 size={18} className="animate-spin" /> Açılıyor...
                 </>
               ) : (
-                "Fiyatları Göster"
+                <>
+                  Fiyatları Göster <ArrowRight size={17} />
+                </>
               )}
             </Button>
 
             <p className="flex items-center justify-center gap-1.5 text-[0.6875rem] text-muted mt-3.5">
               <ShieldCheck size={13} />
-              Bilgileriniz üçüncü taraflarla paylaşılmaz
+              Numaranız üçüncü taraflarla paylaşılmaz
             </p>
           </form>
         )}
@@ -335,24 +277,27 @@ export function PriceTag({
         sizes[size],
         className
       )}
-      title="Fiyatı görmek için kayıt olun"
+      title="Fiyatı görmek için telefon numaranızı bırakın"
     >
-      <Lock size={size === "lg" ? 17 : 13} className="shrink-0" />
-      <span className="underline decoration-dotted decoration-brand/40 underline-offset-4 group-hover:decoration-brand">
+      <span className="underline decoration-brand/35 underline-offset-4 group-hover:decoration-brand">
         Fiyatı gör
       </span>
+      <ArrowRight
+        size={size === "lg" ? 17 : 14}
+        className="shrink-0 transition-transform group-hover:translate-x-0.5"
+      />
     </button>
   );
 }
 
-/** Kayıtsız ziyaretçi için bulanık fiyat bloğu (tablo hücreleri) */
+/** Tablo hücrelerinde fiyat — açık değilse tek tıkla açılan sade bir bağlantı. */
 export function PriceCell({
   price,
   projectId,
   unitId,
   projectName,
 }: {
-  /** Kilitliyken null gelir; maske sabit bir yer tutucuyla çizilir. */
+  /** Açık değilken null gelir; gerçek fiyat istemciye hiç gönderilmez. */
   price: string | null;
   projectId?: string;
   unitId?: string;
@@ -367,19 +312,18 @@ export function PriceCell({
     <button
       type="button"
       onClick={() => open({ projectId, unitId, projectName })}
-      className="group inline-flex items-center gap-2"
-      title="Fiyatı görmek için kayıt olun"
+      className="group inline-flex items-center gap-1.5 font-semibold text-brand hover:text-brand-600 transition-colors"
+      title="Fiyatı görmek için telefon numaranızı bırakın"
     >
-      <span className="price-locked font-semibold num" aria-hidden>
-        £000.000
+      <span className="underline decoration-brand/35 underline-offset-4 group-hover:decoration-brand">
+        Fiyatı gör
       </span>
-      <span className="sr-only">Fiyatı görmek için kayıt olun</span>
-      <Lock size={12} className="text-brand group-hover:scale-110 transition-transform" />
+      <ArrowRight size={13} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
     </button>
   );
 }
 
-/** "Fiyat listesinin kilidini aç" bannerı */
+/** Fiyat listesini açmaya davet eden şerit. */
 export function UnlockBanner({
   projectId,
   projectName,
@@ -399,18 +343,14 @@ export function UnlockBanner({
         className
       )}
     >
-      <div className="h-11 w-11 rounded-xl bg-brand text-white grid place-items-center shrink-0 anim-pulse-ring">
-        <Lock size={19} />
-      </div>
       <div className="min-w-0 flex-1">
-        <p className="font-bold text-ink">Fiyatlar kayıtlı ziyaretçilere açıktır</p>
+        <p className="font-bold text-ink">Fiyat listesini görmek ister misiniz?</p>
         <p className="text-sm text-ink-soft mt-0.5">
-          30 saniyede kaydolun; tüm daire fiyatlarını, kat planlarını ve ödeme
-          planını anında görün.
+          Telefon numaranızı bırakın; tüm daire fiyatları anında açılsın.
         </p>
       </div>
       <Button onClick={() => open({ projectId, projectName })} className="shrink-0">
-        Fiyatları Aç
+        Fiyatları Göster <ArrowRight size={16} />
       </Button>
     </div>
   );

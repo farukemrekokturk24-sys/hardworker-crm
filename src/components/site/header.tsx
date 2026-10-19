@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Phone, MessageCircle, Lock, CheckCircle2 } from "lucide-react";
+import { Menu, X, Phone, MessageCircle, CheckCircle2 } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { usePriceGate } from "./price-gate";
@@ -99,7 +99,6 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
               </span>
             ) : (
               <Button onClick={() => openGate()} size="sm">
-                <Lock size={14} />
                 Fiyat Listesi
               </Button>
             )}
@@ -144,7 +143,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
             <div className="mt-7 space-y-3">
               {!unlocked && (
                 <Button onClick={() => openGate()} size="lg" fullWidth>
-                  <Lock size={16} /> Fiyat Listesini Aç
+                  Fiyat Listesini Gör
                 </Button>
               )}
               <Button

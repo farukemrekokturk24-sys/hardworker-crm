@@ -31,7 +31,8 @@ export function scoreLead(input: {
   purpose?: string | null;
   viewCount?: number;
 }): { score: number; temp: "HOT" | "WARM" | "COLD" } {
-  let s = 30;
+  // Telefon numarası bırakmak tek başına güçlü bir niyet sinyalidir.
+  let s = 40;
   if (input.email) s += 10;
   if (input.projectId) s += 10;
   if (input.unitId) s += 15;

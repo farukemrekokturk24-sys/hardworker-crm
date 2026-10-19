@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePriceGate } from "./price-gate";
 
@@ -18,7 +18,7 @@ export function HeroUnlock() {
 
   return (
     <Button onClick={() => open()} size="lg">
-      <Lock size={17} /> Fiyat Listesini Aç
+      Fiyat Listesini Gör <ArrowRight size={17} />
     </Button>
   );
 }

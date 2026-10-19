@@ -6,17 +6,14 @@ import { prisma } from "@/lib/prisma";
 import { upsertLead } from "@/lib/leads";
 import { signVisitor, getVisitor, trackView } from "@/lib/visitor";
 import { requestMeta } from "@/lib/auth";
-import { isValidPhone, normalizePhone } from "@/lib/utils";
+import { isValidPhone, normalizePhone, prettyPhone } from "@/lib/utils";
 
+// Fiyat listesini açmak için tek zorunlu alan telefon numarasıdır.
 const registerSchema = z.object({
-  name: z.string().trim().min(2, "Adınızı girin."),
   phone: z.string().trim().refine(isValidPhone, "Geçerli bir telefon numarası girin."),
-  email: z.string().trim().email("Geçerli bir e-posta girin.").optional().or(z.literal("")),
-  country: z.string().trim().optional(),
-  purpose: z.enum(["YATIRIM", "OTURUM", "KIRALAMA"]).optional().or(z.literal("")),
+  name: z.string().trim().optional(),
   projectId: z.string().optional().or(z.literal("")),
   unitId: z.string().optional().or(z.literal("")),
-  kvkk: z.string().optional(),
 });
 
 export type RegisterState = {
@@ -42,28 +39,20 @@ export async function registerForPrices(
     return { ok: false, fieldErrors, error: "Lütfen formu kontrol edin." };
   }
 
-  if (raw.kvkk !== "on") {
-    return {
-      ok: false,
-      fieldErrors: { kvkk: "Devam etmek için onay vermeniz gerekiyor." },
-      error: "Lütfen formu kontrol edin.",
-    };
-  }
-
   const d = parsed.data;
   const meta = await requestMeta();
 
+  // İsim verilmediyse CRM listesinde ayırt edilebilsin diye numara kullanılır.
+  const displayName = d.name?.trim() || prettyPhone(d.phone);
+
   try {
     const { lead } = await upsertLead({
-      name: d.name,
+      name: displayName,
       phone: d.phone,
-      email: d.email || null,
-      country: d.country || null,
-      purpose: d.purpose || null,
       projectId: d.projectId || null,
       unitId: d.unitId || null,
       source: "PRICE_GATE",
-      message: "Fiyat listesini görmek için kayıt oldu.",
+      message: "Fiyat listesini görmek için numarasını bıraktı.",
       utmSource: raw.utm_source || null,
       utmMedium: raw.utm_medium || null,
       utmCampaign: raw.utm_campaign || null,
