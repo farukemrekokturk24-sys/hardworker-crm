@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import { prisma } from "./prisma";
+import { AUTH_SECRET } from "./env";
 
 /**
  * Ziyaretçi oturumu — "fiyat görmek için kayıt ol" akışının arkasındaki katman.
@@ -9,9 +10,7 @@ import { prisma } from "./prisma";
  * imzalı çerez o lead'i işaret eder ve fiyatları açar.
  */
 
-const SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET ?? "hw-insecure-dev-secret"
-);
+const SECRET = AUTH_SECRET;
 
 export const VISITOR_COOKIE = "hw_visitor";
 const MAX_AGE = 60 * 60 * 24 * 180; // 180 gün

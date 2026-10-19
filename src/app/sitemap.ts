@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { siteUrl } from "@/lib/env";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hardworkercyprus.com";
+const BASE = siteUrl();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Build sırasında veritabanı henüz bağlı olmayabilir; sitemap yüzünden

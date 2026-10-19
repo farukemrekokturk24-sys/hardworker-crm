@@ -3,10 +3,9 @@ import { cookies, headers } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
+import { AUTH_SECRET } from "./env";
 
-const SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET ?? "hw-insecure-dev-secret"
-);
+const SECRET = AUTH_SECRET;
 
 export const STAFF_COOKIE = "hw_session";
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 gün

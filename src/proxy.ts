@@ -1,9 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
+import { AUTH_SECRET } from "@/lib/env";
 
-const SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET ?? "hw-insecure-dev-secret"
-);
+const SECRET = AUTH_SECRET;
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;

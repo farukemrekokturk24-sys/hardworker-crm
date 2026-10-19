@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
+import { siteUrl } from "@/lib/env";
 
 const display = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -16,7 +17,7 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "Hardworker Construction — Kıbrıs'ta Satılık Daire Projeleri",
     template: "%s | Hardworker Construction",

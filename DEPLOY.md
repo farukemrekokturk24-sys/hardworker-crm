@@ -47,19 +47,25 @@ Vercel bağlantı bilgilerini otomatik olarak ortam değişkeni şeklinde ekler.
 
 Proje ayarlarında **Settings → Environment Variables** bölümüne şunları ekleyin:
 
+Elle girmeniz gereken **tek bir değişken** var:
+
 | Ad | Değer |
 |---|---|
-| `DATABASE_URL` | Neon'un verdiği **unpooled / non-pooling** bağlantı adresi |
 | `AUTH_SECRET` | 1. adımda ürettiğiniz anahtar |
-| `NEXT_PUBLIC_SITE_URL` | Dağıtım sonrası adresiniz, ör. `https://hardworker-crm.vercel.app` |
 
-> **`DATABASE_URL` neden unpooled?** Veritabanı tabloları dağıtım sırasında
-> oluşturulur; bu işlem havuzlanmış (pooled) bağlantıda sorun çıkarabilir.
-> Neon panelinde bağlantı adresini kopyalarken **"Pooled connection"**
-> seçeneğini **kapatın**. Demo trafiğinde doğrudan bağlantı yeterlidir.
+**Production, Preview ve Development** ortamlarının üçünü de işaretleyin.
 
-Üç değişkeni de **Production, Preview ve Development** ortamlarının hepsi için
-işaretleyin.
+Diğerleri kendiliğinden hallolur:
+
+- **`DATABASE_URL`** → Neon'u bağladığınızda Vercel otomatik ekler.
+- **`NEXT_PUBLIC_SITE_URL`** → gerekmez; uygulama Vercel'in verdiği alan adını
+  kendisi kullanır. Yalnızca kendi alan adınızı (ör. `hardworkercyprus.com`)
+  bağlarsanız eklemeniz gerekir.
+
+> **Neon bağlantısı "pooled" mı olmalı?** Tablolar dağıtım sırasında oluşturulur
+> ve bu işlem havuzlanmış bağlantıda sorun çıkarabilir. Vercel'in eklediği
+> `DATABASE_URL` ile dağıtım hata verirse, Neon panelinden **"Pooled connection"
+> kapalı** adresi kopyalayıp `DATABASE_URL` değerini onunla değiştirin.
 
 ---
 
@@ -107,6 +113,11 @@ Dağıtım bitince verilen adreste:
 **Dağıtım `P1001 Can't reach database` ile düşüyor**
 → `DATABASE_URL` eksik ya da hatalı. Neon bağlantısını kontrol edip
 **Deployments → Redeploy** deyin.
+
+**Dağıtım `AUTH_SECRET tanımlı değil` ile düşüyor**
+→ `AUTH_SECRET` eklenmemiş ya da 16 karakterden kısa. 1. adımdaki komutla
+yeni bir anahtar üretip ekleyin ve yeniden dağıtın. (Uygulama, oturum
+çerezinin taklit edilebilmesini önlemek için zayıf anahtarla açılmaz.)
 
 **Site açılıyor ama proje görünmüyor**
 → Seed çalışmamış. Vercel'de **Deployments → (son dağıtım) → Build Logs**
