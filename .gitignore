@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -40,6 +41,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Yerel veritabanı — `npm run db:seed` ile yeniden üretilir
+prisma/*.db
+prisma/*.db-journal
+
 # Proje medyası (büyük) — gerekirse CDN'e taşınacak
 # public/media
+
+# Yerel npm cache ayarı (makineye özel)
 .npmrc
