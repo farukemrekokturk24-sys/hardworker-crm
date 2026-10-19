@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Proje medyası (büyük) — gerekirse CDN'e taşınacak
+# public/media
+.npmrc
