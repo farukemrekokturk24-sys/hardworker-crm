@@ -55,3 +55,6 @@ prisma/*.db-journal
 ._*
 .Spotlight-V100
 .Trashes
+
+# Ham proje kaynakları (4+ GB) — site public/media altındaki optimize kopyaları kullanır
+/Hardworker Kaynaklar/
