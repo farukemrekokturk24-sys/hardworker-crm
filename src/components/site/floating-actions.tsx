@@ -11,15 +11,16 @@ export function FloatingActions() {
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 700);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <div className="fixed right-3.5 bottom-4 sm:right-5 sm:bottom-6 z-40 flex flex-col gap-2.5 safe-b">
+    <div className="fixed right-3.5 bottom-4 sm:right-5 sm:bottom-5 z-40 flex flex-col items-end gap-2.5 safe-b">
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        aria-label="Yukarı çık"
+        aria-label="Sayfanın başına dön"
         className={cn(
           "h-11 w-11 rounded-full glass border border-border shadow-lg grid place-items-center text-ink-soft hover:text-brand transition-all",
           showTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"
@@ -42,10 +43,19 @@ export function FloatingActions() {
         )}`}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="WhatsApp ile yazın"
-        className="h-13 w-13 h-[52px] w-[52px] rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 grid place-items-center hover:brightness-105 active:scale-95 transition-all"
+        aria-label={`WhatsApp ile yazın: ${BRAND.phone2}`}
+        className={cn(
+          "group flex items-center gap-2.5 h-[52px] pl-2 pr-4 rounded-full",
+          "bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30",
+          "hover:brightness-105 active:scale-95 transition-all anim-pulse-ring"
+        )}
       >
-        <WhatsappIcon size={25} />
+        <span className="grid place-items-center h-9 w-9 rounded-full bg-white/20 shrink-0">
+          <WhatsappIcon size={21} />
+        </span>
+        <span className="text-sm font-semibold whitespace-nowrap hidden sm:inline">
+          WhatsApp
+        </span>
       </a>
     </div>
   );

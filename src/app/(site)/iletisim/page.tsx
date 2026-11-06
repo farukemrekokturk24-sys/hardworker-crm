@@ -3,6 +3,7 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { ContactForm } from "@/components/site/contact-form";
 import { Card } from "@/components/ui/primitives";
+import { OfficeMap } from "@/components/site/office-map";
 import { BRAND } from "@/lib/constants";
 import { getProjectCards } from "@/lib/queries";
 
@@ -97,15 +98,7 @@ export default async function ContactPage() {
               </a>
             </Card>
 
-            <div className="rounded-2xl overflow-hidden border border-border h-64">
-              <iframe
-                title="Hardworker Construction ofis konumu"
-                src="https://www.google.com/maps?q=35.1264,33.9387&z=14&output=embed"
-                className="w-full h-full"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
+            <OfficeMap />
           </div>
 
           <div className="lg:col-span-3">

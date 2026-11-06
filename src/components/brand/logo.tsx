@@ -2,44 +2,70 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+type Size = "sm" | "md" | "lg";
+
+const MARK: Record<Size, string> = {
+  sm: "h-9",
+  md: "h-11",
+  lg: "h-14",
+};
+const NAME: Record<Size, string> = {
+  sm: "text-[1.0625rem]",
+  md: "text-[1.25rem]",
+  lg: "text-[1.5rem]",
+};
+const SUB: Record<Size, string> = {
+  sm: "text-[0.5625rem] tracking-[0.26em]",
+  md: "text-[0.625rem] tracking-[0.28em]",
+  lg: "text-[0.6875rem] tracking-[0.3em]",
+};
+
 export function Logo({
   variant = "light",
   href = "/",
   className,
   compact,
+  size = "md",
 }: {
   variant?: "light" | "dark";
   href?: string | null;
   className?: string;
   compact?: boolean;
+  size?: Size;
 }) {
+  const onDark = variant === "dark";
+
   const inner = (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
+    <span className={cn("inline-flex items-center gap-3", className)}>
       <Image
         src="/brand/logo.png"
         alt="Hardworker Construction"
-        width={40}
-        height={30}
+        width={120}
+        height={90}
         priority
         className={cn(
-          "h-8 w-auto object-contain transition-[filter]",
-          variant === "dark" && "brightness-0 invert"
+          MARK[size],
+          "w-auto object-contain transition-[filter] duration-300",
+          // Logo lacivert; koyu zeminde beyaza çevrilir
+          onDark && "brightness-0 invert"
         )}
       />
       {!compact && (
         <span className="flex flex-col leading-none">
           <span
             className={cn(
-              "font-display font-extrabold tracking-tight text-[0.95rem]",
-              variant === "dark" ? "text-white" : "text-ink"
+              "font-display font-extrabold tracking-[-0.03em]",
+              NAME[size],
+              onDark ? "text-white" : "text-ink"
             )}
           >
             HARDWORKER
           </span>
           <span
             className={cn(
-              "text-[0.5625rem] font-semibold tracking-[0.22em] mt-0.5",
-              variant === "dark" ? "text-white/60" : "text-muted"
+              "font-semibold mt-1",
+              SUB[size],
+              onDark ? "text-white/55" : "text-muted"
             )}
           >
             CONSTRUCTION

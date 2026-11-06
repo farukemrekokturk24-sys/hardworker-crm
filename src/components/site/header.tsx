@@ -46,10 +46,10 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
             : "glass border-b border-border shadow-[0_1px_3px_rgb(15_23_34/0.05)]"
         )}
       >
-        <div className="container-x flex items-center justify-between h-16 lg:h-[74px]">
-          <Logo variant={transparent ? "dark" : "light"} />
+        <div className="container-x flex items-center justify-between h-[4.5rem] lg:h-[5.5rem]">
+          <Logo variant={transparent ? "dark" : "light"} size="lg" />
 
-          <nav className="hidden lg:flex items-center gap-0.5">
+          <nav className="hidden xl:flex items-center gap-0.5">
             {NAV_LINKS.map((link) => {
               const active =
                 link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
@@ -79,11 +79,11 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
             })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-1.5">
             <a
               href={`tel:${BRAND.phoneRaw}`}
               className={cn(
-                "inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors",
+                "hidden 2xl:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors",
                 transparent
                   ? "text-white/85 hover:text-white hover:bg-white/10"
                   : "text-ink-soft hover:text-ink hover:bg-surface-2"
@@ -106,7 +106,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
 
           <button
             className={cn(
-              "lg:hidden inline-flex items-center justify-center h-10 w-10 -mr-1 rounded-xl transition-colors",
+              "xl:hidden inline-flex items-center justify-center h-11 w-11 -mr-1 rounded-xl transition-colors",
               transparent ? "text-white hover:bg-white/10" : "text-ink hover:bg-surface-2"
             )}
             onClick={() => setOpen((v) => !v)}
@@ -120,7 +120,7 @@ export function Header({ overHero = false }: { overHero?: boolean }) {
 
       {/* Mobil menü */}
       {open && (
-        <div className="lg:hidden fixed inset-0 top-16 z-40 bg-surface anim-fade overflow-y-auto">
+        <div className="xl:hidden fixed inset-0 top-[4.5rem] z-40 bg-surface anim-fade overflow-y-auto">
           <nav className="container-x py-6 flex flex-col">
             {NAV_LINKS.map((link, i) => {
               const active =

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Layers, Check } from "lucide-react";
 import { PriceCell, UnlockBanner } from "./price-gate";
 import { Badge, EmptyState } from "@/components/ui/primitives";
+import { SoldOutChip } from "./sold-out";
 import { UNIT_STATUS_LABELS, UNIT_STATUS_TONE, UNIT_STATUS_DOT } from "@/lib/constants";
 import { formatPrice, formatArea, cn } from "@/lib/utils";
 
@@ -166,7 +167,7 @@ export function UnitTable({
                       </td>
                       <td className="text-right">
                         {u.status === "SOLD" ? (
-                          <span className="text-muted font-medium">Satıldı</span>
+                          <SoldOutChip />
                         ) : u.hasPrice ? (
                           <PriceCell
                             price={u.price !== null ? formatPrice(u.price, u.currency) : null}
@@ -229,7 +230,7 @@ export function UnitTable({
                 <div className="mt-3.5 pt-3.5 border-t border-border flex items-center justify-between">
                   <span className="text-xs text-muted font-semibold uppercase tracking-wider">Fiyat</span>
                   {u.status === "SOLD" ? (
-                    <span className="text-muted font-medium text-sm">Satıldı</span>
+                    <SoldOutChip />
                   ) : u.hasPrice ? (
                     <PriceCell
                       price={u.price !== null ? formatPrice(u.price, u.currency) : null}

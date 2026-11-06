@@ -6,14 +6,20 @@ export const BRAND = {
   slogan: "Her Proje Yeni Bir Hayat",
   sloganEn: "Every Project, A New Life",
   phone: "+90 548 840 80 80",
-  phone2: "+90 546 999 80 80",
+  phone2: "+90 546 996 80 80",
   phoneRaw: "905488408080",
-  whatsapp: "905469998080",
+  whatsapp: "905469968080",
   email: "info@hardworkercyprus.com",
   address: "İsmet İnönü Bulvarı, Salamis Yolu No:55, Access Butik Yanı, Gazimağusa / KKTC",
   city: "Gazimağusa",
   region: "Kuzey Kıbrıs",
-  mapsUrl: "https://maps.google.com/?q=İsmet+İnönü+Bulvarı+Salamis+Yolu+55+Gazimağusa",
+  // Google işletme kaydından alınan gerçek koordinat
+  lat: 35.1370372,
+  lng: 33.9201776,
+  mapsUrl: "https://www.google.com/maps/place/Hardworker+Construction+%26+Estate/@35.1370372,33.9201776,17z",
+  mapsEmbedUrl:
+    "https://maps.google.com/maps?cid=2068968978773505361&hl=tr&z=16&output=embed",
+  tour360Url: "https://hardworkercyprus.com/360/main/",
   social: {
     facebook: "https://fb.com/hardworker.construction",
     instagram: "https://www.instagram.com/hardworker.construction",
@@ -82,7 +88,7 @@ export const IMAGE_CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
 export const UNIT_STATUS_LABELS: Record<string, string> = {
   AVAILABLE: "Satışta",
   RESERVED: "Rezerve",
-  SOLD: "Satıldı",
+  SOLD: "SOLD OUT",
   BLOCKED: "Bloke",
 };
 

@@ -14,7 +14,7 @@ export async function Footer({
       <div className="container-x py-14 lg:py-16">
         <div className="grid gap-10 lg:gap-8 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Logo variant="dark" />
+            <Logo variant="dark" size="lg" />
             <p className="mt-5 text-sm leading-relaxed max-w-xs">
               Kuzey Kıbrıs&apos;ta 18 yılı aşkın tecrübeyle, zamanında teslim edilen
               ve değer kazandıran yaşam projeleri geliştiriyoruz.

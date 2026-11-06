@@ -2,7 +2,9 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { FloatingActions } from "@/components/site/floating-actions";
 import { PriceGateProvider } from "@/components/site/price-gate";
+import { Assistant } from "@/components/site/assistant";
 import { canSeePrices } from "@/lib/visitor";
+import { getAssistantData } from "@/lib/assistant";
 import { prisma } from "@/lib/prisma";
 
 export default async function SiteLayout({
@@ -10,13 +12,14 @@ export default async function SiteLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [unlocked, projects] = await Promise.all([
+  const [unlocked, projects, assistant] = await Promise.all([
     canSeePrices(),
     prisma.project.findMany({
       where: { published: true },
       select: { slug: true, name: true },
       orderBy: { order: "asc" },
     }),
+    getAssistantData(),
   ]);
 
   return (
@@ -25,6 +28,7 @@ export default async function SiteLayout({
         <Header overHero />
         <main className="flex-1">{children}</main>
         <Footer projects={projects} />
+        <Assistant data={assistant} />
         <FloatingActions />
       </div>
     </PriceGateProvider>

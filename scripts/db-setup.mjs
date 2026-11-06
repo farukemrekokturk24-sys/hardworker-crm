@@ -7,7 +7,20 @@
  * derlenir, veritabanı bağlanınca yeniden dağıtım yeterlidir.
  */
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+
+/** Yerelde .env dosyasındaki değerleri de hesaba kat (Vercel'de gerçek env gelir). */
+function loadDotEnv(file = ".env") {
+  if (!existsSync(file)) return;
+  for (const line of readFileSync(file, "utf8").split("\n")) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+    if (!m) continue;
+    const [, key, raw] = m;
+    if (process.env[key]) continue;
+    process.env[key] = raw.replace(/^["']|["']$/g, "");
+  }
+}
+loadDotEnv();
 
 const CANDIDATES = [
   "DATABASE_URL",

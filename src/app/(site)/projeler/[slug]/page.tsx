@@ -14,6 +14,8 @@ import { Badge, SectionHead } from "@/components/ui/primitives";
 import { AppointmentForm } from "@/components/site/appointment-form";
 import { SummaryPrice } from "@/components/site/summary-price";
 import { GatePageContext } from "@/components/site/price-gate";
+import { TourCard } from "@/components/site/tour-360";
+import { SoldOutBadge } from "@/components/site/sold-out";
 import { getProjectBySlug } from "@/lib/queries";
 import { prisma } from "@/lib/prisma";
 import { trackView, canSeePrices } from "@/lib/visitor";
@@ -101,6 +103,13 @@ export default async function ProjectDetailPage({ params }: Params) {
         ]}
         size="lg"
       >
+        {available.length === 0 && units.length > 0 && (
+          <div className="mb-5">
+            <span className="inline-flex -rotate-2 items-center rounded-xl bg-[var(--danger)] px-5 py-2.5 font-display text-lg font-extrabold uppercase tracking-[0.16em] text-white shadow-2xl ring-4 ring-white/20 sm:text-2xl">
+              Sold Out
+            </span>
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2.5">
           <Badge tone={PROJECT_STATUS_TONE[project.status]} className="!px-3 !py-1.5 !text-xs">
             {PROJECT_STATUS_LABELS[project.status]}
@@ -312,6 +321,8 @@ export default async function ProjectDetailPage({ params }: Params) {
                   <AppointmentForm projectId={project.id} projectName={project.name} />
                 </div>
               </div>
+
+              <TourCard projectName={project.name} />
 
               <div className="card p-5">
                 <h3 className="font-semibold text-ink text-sm">Hemen iletişime geçin</h3>

@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "./prisma";
 import { canSeePrices } from "./visitor";
+import { projectVideo } from "./media";
 import type { ProjectCardData } from "@/components/site/project-card";
 
 /**
@@ -44,6 +45,8 @@ export async function getProjectCards(opts?: {
       availableUnits: available.length,
       minPrice: showPrices ? min : null,
       hasPrice: min !== null,
+      video: projectVideo(p.slug)?.video ?? null,
+      videoPoster: projectVideo(p.slug)?.poster ?? null,
     };
   });
 }
