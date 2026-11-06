@@ -15,6 +15,8 @@ datasource db {
 // Roller: SUPER_ADMIN | SALES_MANAGER | AGENT | MARKETING | VIEWER
 // ============================================================================
 
+// Roller: SUPER_ADMIN | SALES_MANAGER | AGENT | MARKETING | VIEWER | BROKER
+// BROKER = dış emlakçı; yalnızca kendi müşterilerini görür.
 model User {
   id           String    @id @default(cuid())
   name         String
@@ -25,6 +27,12 @@ model User {
   avatar       String?
   active       Boolean   @default(true)
   lastLogin    DateTime?
+
+  /// Emlakçının sunum linklerinde kullanılan kısa kod
+  shareCode    String?   @unique
+  /// Emlakçının bağlı olduğu ofis/firma
+  company      String?
+
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -38,6 +46,10 @@ model User {
   createdTasks    Task[]              @relation("TaskCreator")
   media           Media[]
   activityLogs    ActivityLog[]
+
+  /// Bu emlakçının getirdiği müşteriler
+  referredLeads   Lead[]              @relation("LeadReferrer")
+  shareLinks      ShareLink[]
 }
 
 // ============================================================================
@@ -101,6 +113,7 @@ model Project {
   appointments  Appointment[]
   deals         Deal[]
   views         UnitView[]
+  shareLinks    ShareLink[]
 }
 
 model Block {
@@ -199,6 +212,10 @@ model Lead {
 
   assignedToId String?
   assignedTo   User?   @relation("LeadAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  /// Müşteriyi getiren emlakçı (sunum linki ya da emlakçı panelinden giriş)
+  referredById String?
+  referredBy   User?   @relation("LeadReferrer", fields: [referredById], references: [id], onDelete: SetNull)
 
   utmSource   String?
   utmMedium   String?
@@ -377,6 +394,24 @@ model Task {
 // ============================================================================
 // İÇERİK / SİSTEM
 // ============================================================================
+
+/// Emlakçının müşterisine gönderdiği proje sunum linki.
+/// Link üzerinden gelen ziyaretçinin lead'i otomatik olarak emlakçıya bağlanır.
+model ShareLink {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  label     String?
+  clicks    Int      @default(0)
+  lastOpenedAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
 
 model ContactMessage {
   id        String   @id @default(cuid())

@@ -15,6 +15,8 @@ export default async function PanelLayout({
 }) {
   const user = await getSession();
   if (!user) redirect("/panel/giris");
+  // Dış emlakçı şirket içi CRM'i göremez.
+  if (user.role === "BROKER") redirect("/emlakci");
 
   const [newLeads, todayAppointments, openTasks, unreadMessages] = await Promise.all([
     prisma.lead.count({ where: { status: "NEW", deletedAt: null } }),

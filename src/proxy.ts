@@ -1,34 +1,50 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { STAFF_COOKIE } from "@/lib/cookies";
+import { STAFF_COOKIE, REF_COOKIE } from "@/lib/cookies";
 
 /**
- * /panel için hızlı ön eleme.
+ * Edge katmanı iki iş yapar:
  *
- * Burası edge çalışma zamanıdır; oturum anahtarı veritabanında durduğu için
- * imza doğrulaması burada yapılamaz. Yalnızca çerezin varlığına bakıp oturumu
- * olmayanı giriş sayfasına yollarız.
- *
- * Asıl doğrulama sunucu tarafındadır: panel yerleşimi `getSession()` ile
- * token'ı doğrular ve geçersizse yönlendirir, her server action da
- * `requireSession()` çağırır. Geçersiz bir çerez buradan geçse bile panele
- * erişemez.
+ * 1. Sunum linki takibi — adreste ?ref=<kod> varsa emlakçı kodu çereze yazılır;
+ *    o ziyaretten doğan lead otomatik olarak emlakçıya bağlanır.
+ * 2. Panel ön elemesi — oturum çerezi yoksa giriş sayfasına yollar.
+ *    Oturum anahtarı veritabanında durduğu için imza doğrulaması burada
+ *    yapılamaz; asıl doğrulama sunucuda (getSession / requireSession).
  */
 export function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+  const { pathname, searchParams } = req.nextUrl;
+  const ref = searchParams.get("ref")?.trim();
 
-  if (!pathname.startsWith("/panel")) return NextResponse.next();
-  if (pathname === "/panel/giris") return NextResponse.next();
+  const guard = guardPanel(req, pathname);
+  const res = guard ?? NextResponse.next();
+
+  if (ref && /^[a-z0-9-]{3,40}$/i.test(ref)) {
+    res.cookies.set(REF_COOKIE, ref, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 60, // 60 gün
+    });
+  }
+
+  return res;
+}
+
+function guardPanel(req: NextRequest, pathname: string) {
+  const isPanel = pathname.startsWith("/panel") || pathname.startsWith("/emlakci");
+  if (!isPanel) return null;
+  if (pathname === "/panel/giris") return null;
 
   if (!req.cookies.get(STAFF_COOKIE)?.value) {
     const url = req.nextUrl.clone();
     url.pathname = "/panel/giris";
-    url.searchParams.set("next", req.nextUrl.pathname);
+    url.search = "";
+    url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
-
-  return NextResponse.next();
+  return null;
 }
 
 export const config = {
-  matcher: ["/panel/:path*"],
+  matcher: ["/panel/:path*", "/emlakci/:path*", "/projeler/:path*", "/"],
 };

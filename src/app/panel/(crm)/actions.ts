@@ -7,9 +7,21 @@ import { prisma } from "@/lib/prisma";
 import { requireSession, logout, logActivity } from "@/lib/auth";
 import { assertCan } from "@/lib/permissions";
 import { nextDealRef, nextLeadRef, upsertLead } from "@/lib/leads";
-import { normalizePhone } from "@/lib/utils";
+import { normalizePhone, slugify } from "@/lib/utils";
 
 export type ActionState = { ok?: boolean; error?: string };
+
+/** Emlakçı için okunabilir, benzersiz paylaşım kodu üretir (ör. "ayse-4f2a"). */
+async function nextShareCode(name: string): Promise<string> {
+  const base =
+    slugify(name).split("-").slice(0, 2).join("-").slice(0, 18) || "emlakci";
+  for (let i = 0; i < 20; i++) {
+    const code = `${base}-${Math.random().toString(36).slice(2, 6)}`;
+    const taken = await prisma.user.findUnique({ where: { shareCode: code } });
+    if (!taken) return code;
+  }
+  return `emlakci-${Date.now().toString(36)}`;
+}
 
 export async function logoutAction() {
   await logout();
@@ -591,16 +603,105 @@ export async function createUser(
     return { error: "Bu e-posta zaten kayıtlı." };
   }
 
+  const role = String(formData.get("role") ?? "AGENT");
+
   await prisma.user.create({
     data: {
       name, email,
       phone: String(formData.get("phone") ?? "") || null,
+      company: String(formData.get("company") ?? "") || null,
       passwordHash: await hashPassword(password),
-      role: String(formData.get("role") ?? "AGENT"),
+      role,
+      // Emlakçılar sunum linkini bu kodla üretir
+      shareCode: role === "BROKER" ? await nextShareCode(name) : null,
     },
   });
 
   await logActivity(s.uid, "created", "user", null, `${name} eklendi`);
+  revalidatePath("/panel/kullanicilar");
+  return { ok: true };
+}
+
+/** Kullanıcının adı, rolü ve iletişim bilgilerini günceller. */
+export async function updateUser(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const s = await requireSession();
+  assertCan(s.role, "*");
+
+  const id = String(formData.get("id") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").toLowerCase().trim();
+  const role = String(formData.get("role") ?? "AGENT");
+
+  if (!id || !name || !email) return { error: "Ad ve e-posta gerekli." };
+
+  const target = await prisma.user.findUnique({ where: { id } });
+  if (!target) return { error: "Kullanıcı bulunamadı." };
+
+  // Son süper yöneticinin rolü düşürülemez; panele kimse giremez hâle gelir.
+  if (target.role === "SUPER_ADMIN" && role !== "SUPER_ADMIN") {
+    const admins = await prisma.user.count({
+      where: { role: "SUPER_ADMIN", active: true },
+    });
+    if (admins <= 1) {
+      return { error: "Son süper yöneticinin rolü değiştirilemez." };
+    }
+  }
+
+  const clash = await prisma.user.findFirst({
+    where: { email, id: { not: id } },
+    select: { id: true },
+  });
+  if (clash) return { error: "Bu e-posta başka bir kullanıcıda kayıtlı." };
+
+  const password = String(formData.get("password") ?? "");
+  const data: Record<string, unknown> = {
+    name,
+    email,
+    role,
+    phone: String(formData.get("phone") ?? "") || null,
+    company: String(formData.get("company") ?? "") || null,
+  };
+
+  // Şifre yalnızca doldurulduysa değişir
+  if (password) {
+    if (password.length < 6) return { error: "Şifre en az 6 karakter olmalı." };
+    const { hashPassword } = await import("@/lib/auth");
+    data.passwordHash = await hashPassword(password);
+  }
+
+  // Emlakçıya paylaşım kodu üret
+  if (role === "BROKER" && !target.shareCode) {
+    data.shareCode = await nextShareCode(name);
+  }
+
+  await prisma.user.update({ where: { id }, data });
+  await logActivity(s.uid, "updated", "user", id, `${name} güncellendi`);
+  revalidatePath("/panel/kullanicilar");
+  return { ok: true };
+}
+
+/** Kullanıcıyı siler. Kayıtları (lead, satış) silinmez; ilişki boşa düşer. */
+export async function deleteUser(userId: string): Promise<ActionState> {
+  const s = await requireSession();
+  assertCan(s.role, "*");
+
+  if (userId === s.uid) return { error: "Kendi hesabınızı silemezsiniz." };
+
+  const target = await prisma.user.findUnique({ where: { id: userId } });
+  if (!target) return { error: "Kullanıcı bulunamadı." };
+
+  if (target.role === "SUPER_ADMIN") {
+    const admins = await prisma.user.count({
+      where: { role: "SUPER_ADMIN", active: true },
+    });
+    if (admins <= 1) return { error: "Son süper yönetici silinemez." };
+  }
+
+  await prisma.user.delete({ where: { id: userId } });
+  await logActivity(s.uid, "deleted", "user", userId, `${target.name} silindi`);
   revalidatePath("/panel/kullanicilar");
   return { ok: true };
 }

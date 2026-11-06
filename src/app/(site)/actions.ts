@@ -7,6 +7,19 @@ import { upsertLead } from "@/lib/leads";
 import { signVisitor, getVisitor, trackView } from "@/lib/visitor";
 import { requestMeta } from "@/lib/auth";
 import { isValidPhone, normalizePhone, prettyPhone } from "@/lib/utils";
+import { cookies } from "next/headers";
+import { REF_COOKIE } from "@/lib/cookies";
+
+/** Sunum linkiyle gelen ziyaretçiyi getiren emlakçıyı bulur. */
+async function referrerId(): Promise<string | null> {
+  const code = (await cookies()).get(REF_COOKIE)?.value;
+  if (!code) return null;
+  const broker = await prisma.user.findUnique({
+    where: { shareCode: code },
+    select: { id: true, active: true },
+  });
+  return broker?.active ? broker.id : null;
+}
 
 // Fiyat listesini açmak için tek zorunlu alan telefon numarasıdır.
 const registerSchema = z.object({
@@ -52,6 +65,7 @@ export async function registerForPrices(
       projectId: d.projectId || null,
       unitId: d.unitId || null,
       source: "PRICE_GATE",
+      referredById: await referrerId(),
       message: "Fiyat listesini görmek için numarasını bıraktı.",
       utmSource: raw.utm_source || null,
       utmMedium: raw.utm_medium || null,
@@ -111,6 +125,7 @@ export async function sendContactMessage(
       phone: d.phone,
       email: d.email || null,
       source: "CONTACT_FORM",
+      referredById: await referrerId(),
       message: d.message,
       referrer: meta.referrer,
       ipAddress: meta.ipAddress,
@@ -153,6 +168,7 @@ export async function requestAppointment(
       email: raw.email || null,
       projectId: raw.projectId || null,
       source: "CONTACT_FORM",
+      referredById: await referrerId(),
       message: `Proje gezisi talebi${raw.note ? ` — ${raw.note}` : ""}`,
       referrer: meta.referrer,
       ipAddress: meta.ipAddress,

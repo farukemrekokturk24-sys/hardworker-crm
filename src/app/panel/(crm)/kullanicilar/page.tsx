@@ -19,6 +19,12 @@ export default async function UsersPage() {
     orderBy: [{ active: "desc" }, { name: "asc" }],
   });
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000");
+
   return (
     <div className="space-y-5">
       <div>
@@ -36,13 +42,16 @@ export default async function UsersPage() {
           name: u.name,
           email: u.email,
           phone: u.phone,
+          company: u.company,
           role: u.role,
           active: u.active,
+          shareCode: u.shareCode,
           lastLogin: u.lastLogin?.toISOString() ?? null,
           leadCount: u._count.assignedLeads,
           dealCount: u._count.deals,
         }))}
         currentUserId={session.uid}
+        siteUrl={siteUrl}
       />
     </div>
   );

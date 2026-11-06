@@ -60,6 +60,7 @@ export async function upsertLead(input: {
   budgetMin?: number | null;
   budgetMax?: number | null;
   message?: string | null;
+  referredById?: string | null;
   interestedTypes?: string[] | null;
   utmSource?: string | null;
   utmMedium?: string | null;
@@ -90,6 +91,8 @@ export async function upsertLead(input: {
         interestedTypes: input.interestedTypes
           ? (input.interestedTypes as never)
           : (existing.interestedTypes as never),
+        // Emlakçı bağlantısı bir kez kurulur, sonradan ezilmez
+        referredById: existing.referredById ?? input.referredById ?? null,
         score: Math.max(existing.score, score),
         temp: existing.score >= score ? existing.temp : temp,
         lastActivityAt: new Date(),
@@ -123,6 +126,7 @@ export async function upsertLead(input: {
       budgetMin: input.budgetMin ?? null,
       budgetMax: input.budgetMax ?? null,
       message: input.message ?? null,
+      referredById: input.referredById ?? null,
       interestedTypes: input.interestedTypes ? (input.interestedTypes as never) : undefined,
       utmSource: input.utmSource ?? null,
       utmMedium: input.utmMedium ?? null,

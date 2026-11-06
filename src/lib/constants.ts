@@ -43,6 +43,7 @@ export const ROLES = {
   AGENT: "AGENT",
   MARKETING: "MARKETING",
   VIEWER: "VIEWER",
+  BROKER: "BROKER",
 } as const;
 
 export const ROLE_LABELS: Record<string, string> = {
@@ -51,6 +52,7 @@ export const ROLE_LABELS: Record<string, string> = {
   AGENT: "Satış Danışmanı",
   MARKETING: "Pazarlama",
   VIEWER: "Görüntüleyici",
+  BROKER: "Emlakçı (Dış Partner)",
 };
 
 // ---------------------------------------------------------------- Proje

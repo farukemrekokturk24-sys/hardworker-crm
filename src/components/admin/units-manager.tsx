@@ -5,13 +5,13 @@ import Link from "next/link";
 import {
   Search, Pencil, X, Loader2, Check, Percent, Tags, Layers,
 } from "lucide-react";
-import { Card, Badge, EmptyState, Field, inputClass, selectClass, textareaClass } from "@/components/ui/primitives";
+import { Card, Badge, EmptyState, Field, Avatar, inputClass, selectClass, textareaClass } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import {
   updateUnit, bulkUpdateUnitStatus, bulkAdjustPrices, type ActionState,
 } from "@/app/panel/(crm)/actions";
 import { UNIT_STATUS_LABELS, UNIT_STATUS_TONE, UNIT_STATUS_DOT } from "@/lib/constants";
-import { formatPrice, formatArea, cn } from "@/lib/utils";
+import { formatPrice, formatArea, avatarTone, cn } from "@/lib/utils";
 
 export type UnitRow = {
   id: string;
@@ -30,9 +30,14 @@ export type UnitRow = {
   currency: string;
   status: string;
   notes: string | null;
+  dealId: string | null;
   dealRef: string | null;
+  dealStatus: string | null;
   dealLeadId: string | null;
   dealLeadName: string | null;
+  /** Rezervasyonu/satışı yapan danışman */
+  agentName: string | null;
+  reservedAt: string | null;
 };
 
 export function UnitsManager({
@@ -170,6 +175,7 @@ export function UnitsManager({
                     <th>Alan</th>
                     <th>Durum</th>
                     <th>Müşteri</th>
+                    <th>Danışman</th>
                     <th className="text-right">Fiyat</th>
                     {canEdit && <th className="w-12"></th>}
                   </tr>
@@ -219,6 +225,16 @@ export function UnitsManager({
                           <span className="text-muted">—</span>
                         )}
                       </td>
+                      <td className="text-[0.8125rem]">
+                        {u.agentName ? (
+                          <span className="inline-flex items-center gap-2">
+                            <Avatar name={u.agentName} size="xs" tone={avatarTone(u.agentName)} />
+                            <span className="text-ink-soft">{u.agentName}</span>
+                          </span>
+                        ) : (
+                          <span className="text-muted">—</span>
+                        )}
+                      </td>
                       <td className="text-right font-semibold num">
                         {u.price ? formatPrice(u.price, u.currency) : "—"}
                       </td>
@@ -258,6 +274,14 @@ export function UnitsManager({
                     {UNIT_STATUS_LABELS[u.status]}
                   </Badge>
                 </div>
+
+                {u.agentName && (
+                  <p className="text-xs text-muted mt-2">
+                    {u.dealStatus === "RESERVATION" ? "Rezerve eden" : "Satışı yapan"}:{" "}
+                    <strong className="text-ink-soft font-semibold">{u.agentName}</strong>
+                    {u.dealLeadName && <> · {u.dealLeadName}</>}
+                  </p>
+                )}
 
                 <div className="flex items-center justify-between mt-3.5 pt-3.5 border-t border-border">
                   <span className="text-sm text-muted num">{formatArea(u.grossArea)}</span>
@@ -427,9 +451,15 @@ function EditUnitModal({ unit, onClose }: { unit: UnitRow; onClose: () => void }
           </Field>
 
           {unit.dealRef && (
-            <p className="text-xs text-muted bg-surface-2 rounded-lg px-3 py-2">
+            <p className="text-xs text-muted bg-surface-2 rounded-lg px-3 py-2 leading-relaxed">
               Bu daire <strong className="text-ink-soft num">{unit.dealRef}</strong> kaydına
-              bağlı. Durumu satış ekranından yönetmek daha doğrudur.
+              bağlı
+              {unit.agentName && (
+                <>
+                  {" "}· işlemi <strong className="text-ink-soft">{unit.agentName}</strong> yaptı
+                </>
+              )}
+              . Durumu satış ekranından yönetmek daha doğrudur.
             </p>
           )}
 

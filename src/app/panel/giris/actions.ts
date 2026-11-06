@@ -20,5 +20,11 @@ export async function loginAction(
   const result = await login(email, password);
   if (!result.ok) return { error: result.error };
 
-  redirect(next.startsWith("/panel") ? next : "/panel");
+  // Dış emlakçılar kendi paneline, şirket ekibi CRM'e gider.
+  const home = result.user.role === "BROKER" ? "/emlakci" : "/panel";
+  const allowed =
+    next.startsWith("/panel") || next.startsWith("/emlakci") ? next : home;
+
+  // Emlakçı şirket içi panele yönlendirilmeye çalışılırsa kendi paneline düşer
+  redirect(result.user.role === "BROKER" && !allowed.startsWith("/emlakci") ? home : allowed);
 }

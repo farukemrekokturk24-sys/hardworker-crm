@@ -10,6 +10,9 @@ export const PERMISSIONS: Record<string, string[]> = {
   AGENT: ["dashboard", "leads", "appointments", "deals", "units", "tasks", "view"],
   MARKETING: ["dashboard", "leads", "projects", "media", "reports", "settings.content", "view"],
   VIEWER: ["dashboard", "view"],
+  // Dış emlakçı: yalnızca kendi müşterileri ve sunum linkleri.
+  // Şirket içi CRM'e (envanter, raporlar, kullanıcılar) erişemez.
+  BROKER: ["broker", "view"],
 };
 
 export function can(role: string | undefined, area: string): boolean {
@@ -21,4 +24,9 @@ export function can(role: string | undefined, area: string): boolean {
 /** Yetkisi yoksa hata fırlatır — server action koruması */
 export function assertCan(role: string | undefined, area: string): void {
   if (!can(role, area)) throw new Error("FORBIDDEN");
+}
+
+/** Dış emlakçı mı — şirket içi panele girmemeli. */
+export function isBroker(role: string | undefined): boolean {
+  return role === "BROKER";
 }

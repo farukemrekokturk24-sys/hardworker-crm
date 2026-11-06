@@ -18,7 +18,11 @@ function readImages(slug: string) {
   for (const category of fs.readdirSync(dir)) {
     const cdir = path.join(dir, category);
     if (!fs.statSync(cdir).isDirectory()) continue;
-    const files = fs.readdirSync(cdir).filter((f) => f.endsWith(".webp")).sort();
+    const files = fs
+      .readdirSync(cdir)
+      // macOS exFAT diskte her dosyanın yanına "._<ad>" artığı yazar; görsel değildir.
+      .filter((f) => f.endsWith(".webp") && !f.startsWith("._"))
+      .sort();
     files.forEach((f, i) => {
       out.push({
         url: `/media/${slug}/${category}/${f}`,
@@ -95,6 +99,7 @@ async function main() {
     prisma.deal.deleteMany(),
     prisma.appointment.deleteMany(),
     prisma.task.deleteMany(),
+    prisma.shareLink.deleteMany(),
     prisma.unitView.deleteMany(),
     prisma.leadStatusHistory.deleteMany(),
     prisma.leadActivity.deleteMany(),
@@ -141,6 +146,19 @@ async function main() {
       role: "AGENT",
     },
   });
+  // Dış emlakçı partner — kendi panelinden müşteri ekler, sunum linki paylaşır
+  const broker = await prisma.user.create({
+    data: {
+      name: "Emre Partner",
+      email: "emlakci@partner.com",
+      phone: "905337778899",
+      passwordHash: pw,
+      role: "BROKER",
+      company: "Partner Emlak",
+      shareCode: "emre-partner",
+    },
+  });
+
   const agent2 = await prisma.user.create({
     data: {
       name: "Can Yılmaz",
@@ -367,6 +385,7 @@ async function main() {
     { name: "Burak Demirtaş", phone: "905378889900", country: "Türkiye", status: "LOST", source: "PHONE", temp: "COLD", project: diamond.id, purpose: "OTURUM", budgetMin: 60000, budgetMax: 90000, assigned: agent1.id, days: 22 },
     { name: "Sarah Klein", phone: "4915112345678", email: "s.klein@example.de", country: "Almanya", status: "WON", source: "PRICE_GATE", temp: "HOT", project: platinium.id, purpose: "YATIRIM", budgetMin: 140000, budgetMax: 160000, assigned: manager.id, days: 30 },
     { name: "Okan Tuncel", phone: "905389990011", country: "KKTC", status: "NEW", source: "WALK_IN", temp: "WARM", project: null, purpose: "OTURUM", budgetMin: 80000, budgetMax: 120000, assigned: null, days: 0 },
+    { name: "Mehmet Arslan", phone: "905301112233", email: "m.arslan@example.com", country: "Türkiye", status: "CONTACTED", source: "REFERRAL", temp: "WARM", project: luxera.id, purpose: "YATIRIM", budgetMin: 110000, budgetMax: 180000, assigned: agent1.id, days: 3, referredBy: broker.id },
     { name: "Ivan Petrov", phone: "79162345678", email: "ivan.p@example.ru", country: "Rusya", status: "QUALIFIED", source: "FACEBOOK", temp: "WARM", project: luxera.id, purpose: "YATIRIM", budgetMin: 100000, budgetMax: 170000, assigned: agent2.id, days: 5 },
   ];
 
@@ -388,6 +407,7 @@ async function main() {
         budgetMin: s.budgetMin,
         budgetMax: s.budgetMax,
         assignedToId: s.assigned,
+        referredById: (s as { referredBy?: string }).referredBy ?? null,
         score: s.temp === "HOT" ? 80 : s.temp === "WARM" ? 50 : 20,
         createdAt: created,
         lastActivityAt: new Date(Date.now() - Math.floor(s.days / 2) * 86400000),
@@ -540,6 +560,18 @@ async function main() {
     ],
   });
 
+  // Emlakçının takip edilen sunum linki
+  await prisma.shareLink.create({
+    data: {
+      token: "demo-luxera",
+      userId: broker.id,
+      projectId: luxera.id,
+      label: "Instagram paylaşımı",
+      clicks: 7,
+      lastOpenedAt: new Date(Date.now() - 2 * 86400000),
+    },
+  });
+
   // ---------------------------------------------------------------- Ayarlar
   await prisma.setting.createMany({
     data: [
@@ -567,6 +599,9 @@ async function main() {
   console.log("✅ Seed tamamlandı:", counts);
   console.log("\n   Panel girişi → http://localhost:3000/panel/giris");
   console.log("   E-posta: admin@hardworkercyprus.com");
+  console.log("   Şifre:   hardworker2026");
+  console.log("\n   Emlakçı paneli → http://localhost:3000/emlakci");
+  console.log("   E-posta: emlakci@partner.com");
   console.log("   Şifre:   hardworker2026\n");
 }
 

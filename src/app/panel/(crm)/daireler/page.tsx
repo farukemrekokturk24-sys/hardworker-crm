@@ -16,7 +16,12 @@ export default async function UnitsPage() {
         block: { select: { name: true } },
         deals: {
           where: { status: { not: "CANCELLED" } },
-          select: { id: true, refNo: true, lead: { select: { id: true, name: true } } },
+          select: {
+            id: true, refNo: true, status: true, reservedAt: true,
+            lead: { select: { id: true, name: true } },
+            agent: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: "desc" },
           take: 1,
         },
       },
@@ -60,9 +65,13 @@ export default async function UnitsPage() {
           currency: u.currency,
           status: u.status,
           notes: u.notes,
+          dealId: u.deals[0]?.id ?? null,
           dealRef: u.deals[0]?.refNo ?? null,
+          dealStatus: u.deals[0]?.status ?? null,
           dealLeadId: u.deals[0]?.lead.id ?? null,
           dealLeadName: u.deals[0]?.lead.name ?? null,
+          agentName: u.deals[0]?.agent?.name ?? null,
+          reservedAt: u.deals[0]?.reservedAt?.toISOString() ?? null,
         }))}
         projects={projects}
         canEdit={can(user.role, "units.edit")}

@@ -34,7 +34,7 @@ function sweep(dir) {
   }
 }
 
-for (const dir of [".next", "node_modules/.cache"]) {
+for (const dir of [".next", "public", "prisma", "src", "node_modules/.cache"]) {
   try {
     statSync(dir);
     sweep(dir);
