@@ -34,7 +34,8 @@ function sweep(dir) {
   }
 }
 
-for (const dir of [".next", "public", "prisma", "src", "node_modules/.cache"]) {
+// .git dahil: "._pack-*.idx" artıkları git komutlarını hata mesajına boğuyor
+for (const dir of [".next", "public", "prisma", "src", ".git", "node_modules/.cache"]) {
   try {
     statSync(dir);
     sweep(dir);

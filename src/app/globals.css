@@ -286,6 +286,12 @@
 /* Görsellerin perde gibi açılması */
 .reveal-wipe  { clip-path: inset(0 0 100% 0); transform: none; }
 
+/* Dar ekranda yatay kaydırma sayfayı taşırır; dikeye çevrilir. */
+@media (max-width: 767px) {
+  .reveal-left,
+  .reveal-right { transform: translateY(32px); }
+}
+
 .reveal.in {
   opacity: 1;
   transform: none;
