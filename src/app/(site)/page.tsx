@@ -40,91 +40,82 @@ export default async function HomePage() {
   return (
     <>
       {/* ================================================================ HERO */}
-      {/* Spaciaz düzeni: solda çerçeveli video, sağda açık zeminli metin paneli */}
-      <section className="bg-bg pt-24 lg:pt-28 pb-6">
+      {/* Tam genişlikte sinematik video sahnesi: yatay video dar sütuna
+          sıkışmadan nefes alıyor, metin üstüne biniyor. */}
+      <section className="bg-bg pt-[5.25rem] lg:pt-[6.25rem] pb-8">
         <div className="container-x">
-          <div className="grid lg:grid-cols-[1.05fr_1fr] gap-4 lg:gap-5">
-            {/* Sol: video */}
-            <div className="relative overflow-hidden rounded-[2rem] bg-dark aspect-[4/5] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[640px]">
-              <HeroVideo />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-dark/15" />
+          <div className="relative overflow-hidden rounded-[2rem] bg-dark aspect-[4/5] sm:aspect-[16/10] lg:aspect-[2.3/1]">
+            <HeroVideo />
 
-              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7 flex flex-wrap items-end justify-between gap-4">
-                <p className="inline-flex items-center gap-2 rounded-full glass-dark px-3.5 py-2 text-white text-[0.75rem] font-semibold">
-                  <MapPin size={13} className="text-brand" />
-                  Kuzey Kıbrıs · Gazimağusa
-                </p>
-                <TourButton
-                  variant="hero"
-                  label="360° Tur"
-                  className="!h-11 !px-4 !text-[0.8125rem]"
-                />
-              </div>
+            {/* Metnin oturduğu alt-sol bölge koyulaşır, üst taraf açık kalır */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to top, rgb(7 9 13 / 0.92) 0%, rgb(7 9 13 / 0.55) 34%, rgb(7 9 13 / 0.12) 62%, transparent 85%)",
+              }}
+            />
+            <div
+              className="absolute inset-0 pointer-events-none hidden lg:block"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, rgb(7 9 13 / 0.6) 0%, rgb(7 9 13 / 0.1) 48%, transparent 72%)",
+              }}
+            />
+
+            {/* Üst şerit: konum + 360 */}
+            <div className="absolute inset-x-0 top-0 p-5 sm:p-7 flex items-start justify-between gap-3">
+              <p className="inline-flex items-center gap-2 rounded-full glass-dark px-3.5 py-2 text-white text-[0.75rem] font-semibold">
+                <MapPin size={13} className="text-brand" />
+                Kuzey Kıbrıs · Gazimağusa
+              </p>
+              <TourButton
+                variant="hero"
+                label="360° Tur"
+                className="!h-10 !px-4 !text-[0.8125rem]"
+              />
             </div>
 
-            {/* Sağ: metin paneli */}
-            <div className="relative flex flex-col justify-between rounded-[2rem] bg-surface-2 p-7 sm:p-10 lg:p-12">
-              <div>
-                <p className="eyebrow-pill">Hardworker Construction</p>
+            {/* Alt: başlık ve çağrılar */}
+            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9 lg:p-12">
+              <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+                <div className="max-w-2xl">
+                  <h1 className="t-display text-white text-balance">
+                    Her Proje
+                    <br />
+                    <span className="text-brand">Yeni Bir Hayat</span>
+                  </h1>
 
-                <h1 className="t-display text-ink mt-6 text-balance">
-                  Her Proje
-                  <br />
-                  <span className="text-brand">Yeni Bir Hayat</span>
-                </h1>
-
-                <p className="t-lead mt-6 max-w-md">
-                  18 yılı aşkın tecrübeyle Kıbrıs&apos;ta zamanında teslim edilen,
-                  değer kazandıran yaşam projeleri. Denize yürüme mesafesinde
-                  daireler, %35 peşinat ve 36 aya varan vade.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-3 mt-9">
-                  <HeroUnlock />
-                  <Button href="/projeler" variant="outline" size="lg">
-                    Projeleri İncele <ArrowRight size={17} />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Alt: deneyim rozeti + istatistikler */}
-              <div className="mt-12 pt-8 border-t border-border-strong/60">
-                <div className="flex flex-wrap items-center gap-5">
-                  <span className="grid place-items-center h-[86px] w-[86px] rounded-full bg-brand text-white shrink-0">
-                    <span className="font-display text-3xl font-extrabold leading-none">18</span>
-                    <span className="text-[0.5625rem] font-bold uppercase tracking-[0.12em] mt-0.5 opacity-85">
-                      yıl
-                    </span>
-                  </span>
-                  <p className="text-sm text-ink-soft leading-relaxed max-w-[200px]">
-                    Kıbrıs&apos;ta <strong className="text-ink">18 yılı aşkın</strong>{" "}
-                    inşaat ve gayrimenkul tecrübesi
+                  <p className="t-lead !text-white/75 mt-5 max-w-lg hidden sm:block">
+                    18 yılı aşkın tecrübeyle Kıbrıs&apos;ta zamanında teslim edilen,
+                    değer kazandıran yaşam projeleri.
                   </p>
 
-                  <a
-                    href={`tel:${BRAND.phoneRaw}`}
-                    className="group ml-auto inline-flex items-center gap-3 rounded-full bg-dark pl-2 pr-5 py-2 text-white hover:bg-dark-2 transition-colors"
-                  >
-                    <span className="grid place-items-center h-9 w-9 rounded-full bg-white/15">
-                      <Phone size={15} />
-                    </span>
-                    <span className="text-sm font-semibold whitespace-nowrap">
-                      Hemen ara
-                    </span>
-                  </a>
+                  <div className="flex flex-col sm:flex-row gap-3 mt-7">
+                    <HeroUnlock />
+                    <Button
+                      href="/projeler"
+                      variant="outline"
+                      size="lg"
+                      className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
+                    >
+                      Projeleri İncele <ArrowRight size={17} />
+                    </Button>
+                  </div>
                 </div>
 
-                <dl className="grid grid-cols-3 gap-4 mt-8">
+                {/* Sağ alt: cam istatistik kartı */}
+                <dl className="hidden lg:grid grid-cols-3 gap-7 rounded-2xl glass-dark px-7 py-5 shrink-0">
                   {[
                     { v: stats.projects, s: "", l: "Proje" },
                     { v: stats.ongoing, s: "", l: "Devam Eden" },
-                    { v: stats.sold, s: "+", l: "Teslim Edilen" },
+                    { v: stats.sold, s: "+", l: "Teslim" },
                   ].map((x) => (
                     <div key={x.l}>
-                      <dt className="font-display text-3xl sm:text-4xl font-extrabold text-ink">
+                      <dt className="font-display text-3xl font-extrabold text-white">
                         <CountUp to={x.v} suffix={x.s} />
                       </dt>
-                      <dd className="text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-muted mt-1">
+                      <dd className="text-[0.625rem] font-bold uppercase tracking-[0.14em] text-white/55 mt-1">
                         {x.l}
                       </dd>
                     </div>
@@ -132,6 +123,52 @@ export default async function HomePage() {
                 </dl>
               </div>
             </div>
+          </div>
+
+          {/* Video altı bilgi şeridi */}
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-4 mt-6 px-1">
+            <div className="flex items-center gap-3.5">
+              <span className="grid place-items-center h-14 w-14 rounded-full bg-brand text-white shrink-0">
+                <span className="font-display text-xl font-extrabold leading-none">18</span>
+                <span className="text-[0.5rem] font-bold uppercase tracking-[0.1em] opacity-85">
+                  yıl
+                </span>
+              </span>
+              <p className="text-sm text-ink-soft leading-snug max-w-[190px]">
+                Kıbrıs&apos;ta <strong className="text-ink">18 yılı aşkın</strong> inşaat
+                tecrübesi
+              </p>
+            </div>
+
+            {/* Mobilde istatistikler burada görünür */}
+            <dl className="grid grid-cols-3 gap-6 lg:hidden">
+              {[
+                { v: stats.projects, s: "", l: "Proje" },
+                { v: stats.ongoing, s: "", l: "Devam Eden" },
+                { v: stats.sold, s: "+", l: "Teslim" },
+              ].map((x) => (
+                <div key={x.l}>
+                  <dt className="font-display text-2xl font-extrabold text-ink">
+                    <CountUp to={x.v} suffix={x.s} />
+                  </dt>
+                  <dd className="text-[0.625rem] font-bold uppercase tracking-[0.12em] text-muted mt-0.5">
+                    {x.l}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <a
+              href={`tel:${BRAND.phoneRaw}`}
+              className="group ml-auto inline-flex items-center gap-3 rounded-full bg-dark pl-2 pr-5 py-2 text-white hover:bg-dark-2 transition-colors"
+            >
+              <span className="grid place-items-center h-9 w-9 rounded-full bg-white/15">
+                <Phone size={15} />
+              </span>
+              <span className="text-sm font-semibold whitespace-nowrap">
+                {BRAND.phone}
+              </span>
+            </a>
           </div>
         </div>
       </section>
