@@ -337,8 +337,8 @@ export default async function HomePage() {
                 <Image
                   src="/brand/logo.png"
                   alt=""
-                  width={150}
-                  height={113}
+                  width={130}
+                  height={150}
                   aria-hidden
                   className="absolute logo-3d opacity-30 brightness-0 invert"
                 />
