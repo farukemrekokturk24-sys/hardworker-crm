@@ -26,7 +26,14 @@ export function HeroVideo({
     const el = ref.current;
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Video önbellekten gelirse "canplay" React dinlemeye başlamadan tetiklenir;
+    // bu durumda poster/video görünmez kalırdı.
+    if (el.readyState >= 2) setReady(true);
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setReady(true);
+      return;
+    }
 
     const play = () => el.play().catch(() => {});
 
@@ -49,7 +56,7 @@ export function HeroVideo({
     <video
       ref={ref}
       className={cn(
-        "absolute inset-0 h-full w-full object-cover transition-opacity duration-1000",
+        "absolute inset-0 h-full w-full object-cover transition-opacity duration-700",
         ready ? "opacity-100" : "opacity-0",
         className
       )}
@@ -59,8 +66,11 @@ export function HeroVideo({
       playsInline
       preload="metadata"
       aria-hidden
+      onLoadedData={() => setReady(true)}
       onCanPlay={() => setReady(true)}
     >
+      {/* Mobilde küçük dosya; masaüstünde keskin sürüm */}
+      <source src="/video/hero-sm.mp4" type="video/mp4" media="(max-width: 767px)" />
       <source src={src} type="video/mp4" />
     </video>
   );

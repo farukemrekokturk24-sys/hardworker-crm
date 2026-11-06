@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Tükenen projeler için belirgin "SOLD OUT" damgası.
- * Kart görselinin üzerine çapraz oturur, uzaktan da okunur.
+ * Tükenen projeler için damga.
+ * Marka mavisiyle, oturma + parlama animasyonlu.
  */
 export function SoldOutBadge({
   className,
@@ -18,15 +18,14 @@ export function SoldOutBadge({
         className
       )}
     >
-      <span className="absolute inset-0 bg-dark/45" />
+      <span className="absolute inset-0 bg-dark/40 backdrop-blur-[1px]" />
       <span
         className={cn(
-          "relative -rotate-[8deg] font-display font-extrabold uppercase",
-          "bg-[var(--danger)] text-white shadow-2xl",
-          "ring-4 ring-white/25",
+          "stamp relative font-display font-extrabold uppercase",
+          "bg-brand text-white ring-4 ring-white/30",
           size === "lg"
-            ? "text-2xl sm:text-4xl tracking-[0.14em] px-8 py-3.5 rounded-xl"
-            : "text-lg sm:text-xl tracking-[0.16em] px-5 py-2.5 rounded-lg"
+            ? "text-2xl sm:text-4xl tracking-[0.16em] px-9 py-4 rounded-2xl"
+            : "text-lg sm:text-xl tracking-[0.18em] px-6 py-3 rounded-xl"
         )}
       >
         Sold Out
@@ -40,7 +39,7 @@ export function SoldOutChip({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md bg-[var(--danger)] px-2 py-1",
+        "inline-flex items-center rounded-md bg-brand px-2 py-1",
         "text-[0.625rem] font-extrabold uppercase tracking-[0.14em] text-white",
         className
       )}

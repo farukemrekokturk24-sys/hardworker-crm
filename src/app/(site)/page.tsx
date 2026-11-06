@@ -2,15 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight, ArrowUpRight, ShieldCheck, Clock, Gem, Users, Building2,
-  Waves, CheckCircle2, Phone, Compass, ChevronDown,
+  Waves, CheckCircle2, Phone, Play, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SectionHead } from "@/components/ui/primitives";
 import { ProjectCard } from "@/components/site/project-card";
-import { Reveal, WordRise, CountUp, Marquee, Parallax } from "@/components/site/reveal";
+import { Reveal, WordRise, CountUp, Marquee } from "@/components/site/reveal";
 import { HeroVideo } from "@/components/site/hero-video";
 import { HeroUnlock } from "@/components/site/hero-unlock";
 import { TourButton } from "@/components/site/tour-360";
+import { ProjectFan } from "@/components/site/project-fan";
 import { getProjectCards, getSiteStats } from "@/lib/queries";
 import { BRAND } from "@/lib/constants";
 
@@ -36,99 +36,108 @@ const MARQUEE = [
 
 export default async function HomePage() {
   const [all, stats] = await Promise.all([getProjectCards(), getSiteStats()]);
-  const featured = all.filter((p) => p.availableUnits > 0).slice(0, 3);
 
   return (
     <>
       {/* ================================================================ HERO */}
-      <section className="relative min-h-[92dvh] lg:min-h-dvh flex items-end overflow-hidden bg-dark">
-        <HeroVideo />
-        {/* Karartma yalnızca metnin oturduğu alt bölgede yoğun; üstte video açık kalır */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(to top, rgb(7 9 13) 0%, rgb(7 9 13 / 0.78) 26%, rgb(7 9 13 / 0.35) 55%, transparent 80%)",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgb(7 9 13 / 0.55) 0%, rgb(7 9 13 / 0.12) 45%, transparent 75%)",
-          }}
-        />
+      {/* Spaciaz düzeni: solda çerçeveli video, sağda açık zeminli metin paneli */}
+      <section className="bg-bg pt-24 lg:pt-28 pb-6">
+        <div className="container-x">
+          <div className="grid lg:grid-cols-[1.05fr_1fr] gap-4 lg:gap-5">
+            {/* Sol: video */}
+            <div className="relative overflow-hidden rounded-[2rem] bg-dark aspect-[4/5] sm:aspect-[16/11] lg:aspect-auto lg:min-h-[640px]">
+              <HeroVideo />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-dark/15" />
 
-        <div className="container-x relative pb-16 lg:pb-24 pt-32 w-full">
-          <div className="max-w-4xl">
-            <p className="anim-fade-up inline-flex items-center gap-2.5 text-white/70 text-[0.6875rem] font-bold tracking-[0.22em] uppercase">
-              <span className="h-px w-10 bg-brand" />
-              Kuzey Kıbrıs · Gazimağusa
-            </p>
-
-            <h1
-              className="anim-fade-up t-display text-white mt-6 text-balance"
-              style={{ animationDelay: "100ms" }}
-            >
-              Her Proje
-              <br />
-              <span className="text-brand">Yeni Bir Hayat</span>
-            </h1>
-
-            <p
-              className="anim-fade-up t-lead !text-white/75 mt-7 max-w-xl"
-              style={{ animationDelay: "200ms" }}
-            >
-              18 yılı aşkın tecrübeyle Kıbrıs&apos;ta zamanında teslim edilen, değer
-              kazandıran yaşam projeleri. Denize yürüme mesafesinde daireler,
-              %35 peşinat ve 36 aya varan vade.
-            </p>
-
-            <div
-              className="anim-fade-up flex flex-col sm:flex-row flex-wrap gap-3 mt-10"
-              style={{ animationDelay: "300ms" }}
-            >
-              <HeroUnlock />
-              <Button
-                href="/projeler"
-                variant="outline"
-                size="lg"
-                className="bg-white/10 border-white/25 text-white hover:bg-white/20 hover:border-white/40 backdrop-blur-sm"
-              >
-                Projeleri İncele <ArrowRight size={17} />
-              </Button>
-              <TourButton variant="hero" />
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7 flex flex-wrap items-end justify-between gap-4">
+                <p className="inline-flex items-center gap-2 rounded-full glass-dark px-3.5 py-2 text-white text-[0.75rem] font-semibold">
+                  <MapPin size={13} className="text-brand" />
+                  Kuzey Kıbrıs · Gazimağusa
+                </p>
+                <TourButton
+                  variant="hero"
+                  label="360° Tur"
+                  className="!h-11 !px-4 !text-[0.8125rem]"
+                />
+              </div>
             </div>
 
-            <dl
-              className="anim-fade-up grid grid-cols-3 gap-5 sm:gap-10 mt-14 pt-9 border-t border-white/15 max-w-xl"
-              style={{ animationDelay: "400ms" }}
-            >
-              {[
-                { v: stats.projects, s: "", l: "Proje" },
-                { v: stats.ongoing, s: "", l: "Devam Eden" },
-                { v: stats.sold, s: "+", l: "Teslim Edilen Daire" },
-              ].map((x) => (
-                <div key={x.l}>
-                  <dt className="t-h1 text-white font-display">
-                    <CountUp to={x.v} suffix={x.s} />
-                  </dt>
-                  <dd className="text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-white/55 mt-1.5">
-                    {x.l}
-                  </dd>
+            {/* Sağ: metin paneli */}
+            <div className="relative flex flex-col justify-between rounded-[2rem] bg-surface-2 p-7 sm:p-10 lg:p-12">
+              <div>
+                <p className="eyebrow-pill">Hardworker Construction</p>
+
+                <h1 className="t-display text-ink mt-6 text-balance">
+                  Her Proje
+                  <br />
+                  <span className="text-brand">Yeni Bir Hayat</span>
+                </h1>
+
+                <p className="t-lead mt-6 max-w-md">
+                  18 yılı aşkın tecrübeyle Kıbrıs&apos;ta zamanında teslim edilen,
+                  değer kazandıran yaşam projeleri. Denize yürüme mesafesinde
+                  daireler, %35 peşinat ve 36 aya varan vade.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 mt-9">
+                  <HeroUnlock />
+                  <Button href="/projeler" variant="outline" size="lg">
+                    Projeleri İncele <ArrowRight size={17} />
+                  </Button>
                 </div>
-              ))}
-            </dl>
+              </div>
+
+              {/* Alt: deneyim rozeti + istatistikler */}
+              <div className="mt-12 pt-8 border-t border-border-strong/60">
+                <div className="flex flex-wrap items-center gap-5">
+                  <span className="grid place-items-center h-[86px] w-[86px] rounded-full bg-brand text-white shrink-0">
+                    <span className="font-display text-3xl font-extrabold leading-none">18</span>
+                    <span className="text-[0.5625rem] font-bold uppercase tracking-[0.12em] mt-0.5 opacity-85">
+                      yıl
+                    </span>
+                  </span>
+                  <p className="text-sm text-ink-soft leading-relaxed max-w-[200px]">
+                    Kıbrıs&apos;ta <strong className="text-ink">18 yılı aşkın</strong>{" "}
+                    inşaat ve gayrimenkul tecrübesi
+                  </p>
+
+                  <a
+                    href={`tel:${BRAND.phoneRaw}`}
+                    className="group ml-auto inline-flex items-center gap-3 rounded-full bg-dark pl-2 pr-5 py-2 text-white hover:bg-dark-2 transition-colors"
+                  >
+                    <span className="grid place-items-center h-9 w-9 rounded-full bg-white/15">
+                      <Phone size={15} />
+                    </span>
+                    <span className="text-sm font-semibold whitespace-nowrap">
+                      Hemen ara
+                    </span>
+                  </a>
+                </div>
+
+                <dl className="grid grid-cols-3 gap-4 mt-8">
+                  {[
+                    { v: stats.projects, s: "", l: "Proje" },
+                    { v: stats.ongoing, s: "", l: "Devam Eden" },
+                    { v: stats.sold, s: "+", l: "Teslim Edilen" },
+                  ].map((x) => (
+                    <div key={x.l}>
+                      <dt className="font-display text-3xl sm:text-4xl font-extrabold text-ink">
+                        <CountUp to={x.v} suffix={x.s} />
+                      </dt>
+                      <dd className="text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-muted mt-1">
+                        {x.l}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
           </div>
         </div>
-
-        <span className="absolute bottom-7 left-1/2 -translate-x-1/2 hidden lg:grid place-items-center h-11 w-7 rounded-full border border-white/25">
-          <ChevronDown size={14} className="text-white/70 anim-scroll-hint" />
-        </span>
       </section>
 
       {/* ============================================================== ŞERİT */}
-      <div className="bg-dark border-t border-white/10 py-4">
+      <div className="bg-dark py-4">
         <Marquee speed={46}>
           {MARQUEE.map((t) => (
             <span
@@ -159,10 +168,11 @@ export default async function HomePage() {
             </Reveal>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* 2'li ızgara — kartlar yan yana ve daha iri */}
+          <div className="grid gap-6 md:grid-cols-2">
             {all.map((p, i) => (
               <Reveal key={p.id} delay={i * 90} variant="up">
-                <ProjectCard project={p} priority={i < 3} />
+                <ProjectCard project={p} priority={i < 2} />
               </Reveal>
             ))}
           </div>
@@ -182,132 +192,88 @@ export default async function HomePage() {
           </Reveal>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 mt-14">
-            {VALUES.map((v, i) => {
-              // Referanstaki gibi ızgarada koyu ve vurgulu kartlar serpiştirilir
-              const dark = i === 0;
-              const brand = i === 4;
-              return (
-                <Reveal key={v.title} delay={i * 70} variant="up">
-                  <div
-                    className={[
-                      "group h-full p-7 rounded-[var(--r-card)] transition-colors duration-300",
-                      dark
-                        ? "card-dark"
-                        : brand
-                          ? "card-brand"
-                          : "bg-surface border border-border hover:border-brand/35",
-                    ].join(" ")}
-                  >
-                    <div
-                      className={[
-                        "h-12 w-12 rounded-xl grid place-items-center",
-                        dark || brand ? "bg-white/15 text-white" : "bg-brand-50 text-brand",
-                      ].join(" ")}
-                    >
+            {VALUES.map((v, i) => (
+              <Reveal key={v.title} delay={i * 70} variant="up">
+                {/* Hepsi aynı renk; ayrım üzerine gelince oluşur */}
+                <div className="group relative h-full overflow-hidden rounded-[var(--r-card)] border border-border bg-surface p-7 transition-colors duration-500 hover:border-brand">
+                  {/* Alttan dolan mavi zemin */}
+                  <span className="absolute inset-0 bg-brand translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+
+                  <div className="relative">
+                    <div className="h-12 w-12 rounded-xl bg-brand-50 text-brand grid place-items-center transition-colors duration-500 group-hover:bg-white/20 group-hover:text-white">
                       <v.icon size={22} />
                     </div>
-                    <h3
-                      className={[
-                        "font-display font-bold mt-5 text-xl",
-                        dark || brand ? "text-white" : "text-ink",
-                      ].join(" ")}
-                    >
+                    <h3 className="font-display font-bold mt-5 text-xl text-ink transition-colors duration-500 group-hover:text-white">
                       {v.title}
                     </h3>
-                    <p
-                      className={[
-                        "text-sm mt-2.5 leading-relaxed",
-                        dark || brand ? "text-white/70" : "text-muted",
-                      ].join(" ")}
-                    >
+                    <p className="text-sm mt-2.5 leading-relaxed text-muted transition-colors duration-500 group-hover:text-white/80">
                       {v.text}
                     </p>
                   </div>
-                </Reveal>
-              );
-            })}
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ============================================================== YATIRIM */}
       <section className="section bg-bg overflow-hidden">
-        <div className="container-x grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
-          <Reveal variant="left">
-            <p className="eyebrow-pill mb-5">Neden Kıbrıs?</p>
-            <h2 className="t-h1 text-ink text-balance">
-              Akdeniz&apos;de kazandıran bir yatırım
-            </h2>
-            <p className="t-lead mt-5">
-              Kuzey Kıbrıs; yükselen gayrimenkul değerleri, güçlü kira getirisi ve yıl
-              boyu süren yaşam kalitesiyle bölgenin en cazip yatırım adreslerinden biri.
-            </p>
+        <div className="container-x">
+          <Reveal>
+            <div className="max-w-2xl mx-auto text-center">
+              <p className="eyebrow-pill mb-5">Neden Kıbrıs?</p>
+              <h2 className="t-h1 text-ink text-balance">
+                <WordRise text="Akdeniz'de kazandıran bir yatırım" />
+              </h2>
+              <p className="t-lead mt-5">
+                Yükselen gayrimenkul değerleri, güçlü kira getirisi ve yıl boyu süren
+                yaşam kalitesi. Projelerimizi kaydırarak inceleyin.
+              </p>
+            </div>
+          </Reveal>
+        </div>
 
-            <ul className="mt-9 space-y-5">
+        {/* Yelpaze kart karuseli */}
+        <ProjectFan projects={all} />
+
+        <div className="container-x">
+          <Reveal>
+            <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-6">
               {[
-                { t: "Yıllık %8 kira garantisi", d: "Belirli ödeme planlarında 2 yıl boyunca garantili kira getirisi." },
-                { t: "%10'a varan peşin indirimi", d: "Peşinat oranına göre kademeli indirim ya da ek vade avantajı." },
+                { t: "Yıllık %8 kira garantisi", d: "Belirli ödeme planlarında 2 yıl garantili getiri." },
+                { t: "%10'a varan indirim", d: "Peşinat oranına göre kademeli indirim ya da ek vade." },
                 { t: "36 aya varan vade", d: "%35 peşinat sonrası kalan tutar faizsiz taksitlendirilir." },
-                { t: "300 güneşli gün", d: "Yıl boyu yaşanabilir iklim, güçlü turizm ve öğrenci kira talebi." },
+                { t: "300 güneşli gün", d: "Yıl boyu turizm ve öğrenci kaynaklı kira talebi." },
               ].map((item, i) => (
-                <li key={item.t} className="flex gap-4" style={{ transitionDelay: `${i * 60}ms` }}>
-                  <CheckCircle2 size={21} className="shrink-0 mt-0.5 text-brand" />
-                  <div>
-                    <p className="font-semibold text-ink">{item.t}</p>
-                    <p className="text-sm text-muted mt-1 leading-relaxed">{item.d}</p>
-                  </div>
+                <li
+                  key={item.t}
+                  className="rounded-[var(--r-card)] border border-border bg-surface p-6"
+                  style={{ transitionDelay: `${i * 60}ms` }}
+                >
+                  <CheckCircle2 size={22} className="text-brand" />
+                  <p className="font-semibold text-ink mt-4">{item.t}</p>
+                  <p className="text-sm text-muted mt-1.5 leading-relaxed">{item.d}</p>
                 </li>
               ))}
             </ul>
 
-            <Button href="/neden-kibris" className="mt-9">
-              Yatırım Rehberi <ArrowRight size={16} />
-            </Button>
-          </Reveal>
-
-          <Reveal delay={120} variant="right">
-            <div className="grid grid-cols-2 gap-4">
-              {all.slice(0, 4).map((p, i) => (
-                <Parallax key={p.id} amount={i % 2 === 0 ? 26 : -26}>
-                  <Link
-                    href={`/projeler/${p.slug}`}
-                    className={`group relative block overflow-hidden rounded-[var(--r-card)] ${
-                      i % 3 === 0 ? "aspect-[3/4]" : "aspect-square"
-                    }`}
-                  >
-                    {p.coverImage && (
-                      <Image
-                        src={p.coverImage}
-                        alt={p.name}
-                        fill
-                        sizes="(max-width: 1024px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-[900ms] group-hover:scale-110"
-                      />
-                    )}
-                    <span className="absolute inset-0 bg-gradient-to-t from-dark/85 to-transparent" />
-                    <span className="absolute bottom-4 left-4 right-4 text-white font-display font-bold text-sm leading-tight">
-                      {p.name}
-                    </span>
-                  </Link>
-                </Parallax>
-              ))}
+            <div className="flex justify-center mt-10">
+              <Button href="/neden-kibris" size="lg">
+                Yatırım Rehberi <ArrowRight size={17} />
+              </Button>
             </div>
           </Reveal>
         </div>
       </section>
 
       {/* ============================================================= 360 TUR */}
-      <section className="section bg-dark text-white overflow-hidden">
-        <div className="container-x">
-          <Reveal>
-            <div className="max-w-2xl">
-              <p className="eyebrow !text-brand-100 mb-4">
-                <span className="h-px w-8 bg-brand" />
-                Sanal Tur
-              </p>
-              <h2 className="t-h1 text-white text-balance">
-                Daireleri 360° gezin
-              </h2>
+      <section className="section bg-dark text-white overflow-hidden relative">
+        <div className="container-x relative">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <Reveal>
+              <p className="eyebrow !text-brand-100 mb-4">Sanal Tur</p>
+              <h2 className="t-h1 text-white text-balance">Daireleri 360° gezin</h2>
               <p className="t-lead !text-white/65 mt-5">
                 Kıbrıs&apos;a gelmeden önce projeleri adım adım dolaşın. Odaların
                 ferahlığını, manzarayı ve sosyal alanları tarayıcınızdan görün.
@@ -315,8 +281,33 @@ export default async function HomePage() {
               <div className="mt-8">
                 <TourButton variant="dark" />
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+
+            {/* Sağda düşük opaklıklı 3D küre */}
+            <Reveal variant="right" className="hidden lg:block">
+              <div className="relative grid place-items-center h-[340px]">
+                <span className="absolute h-[300px] w-[300px] rounded-full border border-white/10" />
+                <span className="absolute h-[230px] w-[230px] rounded-full border border-white/10" />
+                <div
+                  className="relative h-[260px] w-[260px] rounded-full opacity-[0.22] anim-float"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 32% 28%, #7fc4f2 0%, #126fb2 42%, #0b4672 72%, #07090d 100%)",
+                    boxShadow:
+                      "inset -28px -28px 70px rgba(0,0,0,0.65), 0 40px 90px -40px rgba(18,111,178,0.9)",
+                  }}
+                />
+                <Image
+                  src="/brand/logo.png"
+                  alt=""
+                  width={150}
+                  height={113}
+                  aria-hidden
+                  className="absolute logo-3d opacity-30 brightness-0 invert"
+                />
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -357,10 +348,6 @@ export default async function HomePage() {
                   </a>
                 </div>
               </div>
-              <Compass
-                size={260}
-                className="absolute -right-14 -bottom-14 text-white/10 anim-float hidden sm:block"
-              />
             </div>
           </Reveal>
         </div>

@@ -50,6 +50,8 @@ export const QUICK_CHIPS = [
   "Ödeme planı nasıl?",
   "Teslim ne zaman?",
   "Kira garantisi var mı?",
+  "Tapu süreci nasıl?",
+  "Yabancı alabilir mi?",
   "Ofisiniz nerede?",
 ];
 
@@ -183,6 +185,85 @@ export function answer(input: string, data: AssistantData): Reply {
     };
   }
 
+  /* -------------------------------------------------- daire tipi / metrekare */
+  if (has(q, "metrekare", "m2", "kac oda", "buyukluk", "alan", "genis", "kac metre")) {
+    const lines = data.projects
+      .filter((p) => p.types.length)
+      .map((p) => `• ${p.name}: ${p.types.join(", ")}`);
+    return {
+      text:
+        "Daire tiplerimiz projeye göre değişiyor:\n" + lines.join("\n") +
+        "\n\nStüdyodan 3+1'e, bahçeli zemin katlardan teraslı penthouse'lara kadar seçenek var. Hangi tip sizin için uygun?",
+      chips: ["Studio", "1+1", "2+1", "3+1"],
+    };
+  }
+
+  /* ------------------------------------------------------------ aidat/gider */
+  if (has(q, "aidat", "gider", "isletme", "yonetim bedeli", "masraf")) {
+    return {
+      text:
+        "Aidat, projenin sosyal donatılarına göre belirlenir ve genellikle havuz, peyzaj, güvenlik ve ortak alan bakımını kapsar. " +
+        "Seçtiğiniz projeye özel güncel tutarı satış ekibimiz paylaşır.",
+      toWhatsapp: true,
+    };
+  }
+
+  /* --------------------------------------------------------------- eşya */
+  if (has(q, "esya", "mobilya", "beyaz esya", "furnished", "paket")) {
+    return {
+      text:
+        "Eşya paketimiz mevcut. Kira garantisinden yararlanmak isteyen yatırımcıların şirketin eşya paketini alması gerekiyor; " +
+        "paket mutfak, beyaz eşya ve temel mobilyayı kapsar. Detaylı içerik ve fiyat için danışmanımıza bağlayayım.",
+      toWhatsapp: true,
+      chips: ["Kira garantisi var mı?", "Ödeme planı nasıl?"],
+    };
+  }
+
+  /* ---------------------------------------------------------- inşaat durumu */
+  if (has(q, "insaat", "ilerleme", "asama", "ne durumda", "basladi", "devam")) {
+    const ongoing = data.projects.filter((p) => p.status === "ONGOING");
+    return {
+      text:
+        ongoing.length
+          ? "Devam eden projelerimiz:\n" +
+            ongoing.map((p) => `• ${p.name} — teslim ${p.deliveryLabel ?? "—"}`).join("\n") +
+            "\n\nProje sayfalarındaki “İnşaat Durumu” galerisinden aylık ilerleme fotoğraflarını görebilirsiniz."
+          : "Şu an devam eden projemiz görünmüyor.",
+      links: [{ label: "Projeleri gör", href: "/projeler" }],
+    };
+  }
+
+  /* ------------------------------------------------------------- şirket */
+  if (has(q, "kimsiniz", "hakkinda", "sirket", "firma", "guvenilir", "tecrube", "kac yil", "referans")) {
+    return {
+      text:
+        "Hardworker Construction, Gazimağusa merkezli bir inşaat ve gayrimenkul geliştirme şirketi. " +
+        "Kurucularının 30 yılı aşkın sektör tecrübesi var; bugüne kadar yüzlerce daireyi zamanında teslim ettik. " +
+        "Sunrise Gold projemiz 2024'te sözünde teslim edilip tamamı satıldı.",
+      links: [{ label: "Hakkımızda", href: "/hakkimizda" }],
+    };
+  }
+
+  /* --------------------------------------------------------- kredi/taksit */
+  if (has(q, "banka", "kredi", "faiz", "finansman")) {
+    return {
+      text:
+        "Banka kredisine gerek yok: kalan tutarı doğrudan bize, faizsiz olarak 36 aya kadar taksitlendiriyoruz. " +
+        "%35 peşinat sonrası eşit taksitler halinde ödenir.",
+      chips: ["Ödeme planı nasıl?", "Fiyatlar nedir?"],
+    };
+  }
+
+  /* ------------------------------------------------------------- iptal/iade */
+  if (has(q, "iptal", "iade", "vazgec", "cayma")) {
+    return {
+      text:
+        "Rezervasyon ve sözleşme koşulları imzaladığınız sözleşmede açıkça yer alır. " +
+        "Durumunuza özel bilgi için satış ekibimizle görüşmeniz en doğrusu.",
+      toWhatsapp: true,
+    };
+  }
+
   /* -------------------------------------------------------------- konum */
   if (has(q, "nerede", "konum", "adres", "ofis", "lokasyon", "harita", "ulasim")) {
     return {
@@ -205,7 +286,7 @@ export function answer(input: string, data: AssistantData): Reply {
   }
 
   /* -------------------------------------------------- tapu / yabancı alım */
-  if (has(q, "tapu", "yabanci", "vatandas", "izin", "yasal", "surec")) {
+  if (has(q, "tapu", "yabanci", "vatandas", "izin", "yasal", "surec", "alabilir", "ikamet", "oturum izni")) {
     return {
       text:
         "Yabancı yatırımcılar için süreç nettir: daire seçimi → rezervasyon → sözleşme ve peşinat → taksitler → satın alma izni ve tapu devri. " +
@@ -227,8 +308,15 @@ export function answer(input: string, data: AssistantData): Reply {
   /* ------------------------------------------------------------ anlaşılmadı */
   return {
     text:
-      "Bunu tam anlayamadım. Projeler, fiyatlar, ödeme planı, teslim tarihleri ve randevu konularında yardımcı olabilirim. " +
-      "Daha detaylı bir sorunuz varsa sizi satış ekibimize bağlayayım.",
+      "Bunu tam anlayamadım. Şu konularda yardımcı olabilirim:\n" +
+      "• Projeler, daire tipleri ve metrekareler\n" +
+      "• Fiyatlar ve ödeme planı\n" +
+      "• Kira garantisi ve yatırım getirisi\n" +
+      "• Teslim tarihleri ve inşaat durumu\n" +
+      "• Tapu, satın alma izni ve yabancı alımı\n" +
+      "• Eşya paketi, aidat\n" +
+      "• 360° tur, randevu ve konum\n\n" +
+      "Daha özel bir sorunuz varsa sizi satış ekibimize bağlayayım.",
     chips: QUICK_CHIPS,
     toWhatsapp: true,
   };

@@ -25,7 +25,7 @@ export default async function SiteLayout({
   return (
     <PriceGateProvider unlocked={unlocked}>
       <div className="min-h-dvh flex flex-col">
-        <Header overHero />
+        <Header />
         <main className="flex-1">{children}</main>
         <Footer projects={projects} />
         <Assistant data={assistant} />

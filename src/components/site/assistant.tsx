@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Send, X, Sparkles, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { Send, X, Loader2 } from "lucide-react";
 import { WhatsappIcon } from "@/components/brand/social-icons";
 import { usePriceGate } from "./price-gate";
 import { answer, QUICK_CHIPS, type Reply } from "@/lib/assistant-intents";
@@ -10,7 +11,7 @@ import type { AssistantData } from "@/lib/assistant";
 import { BRAND } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const NAME = "Deniz";
+const NAME = "HardworkerAI";
 
 type Msg = {
   id: number;
@@ -41,7 +42,7 @@ export function Assistant({ data }: { data: AssistantData }) {
         {
           id: nextId(),
           from: "bot",
-          text: `Merhaba, ben ${NAME} 👋 Hardworker'ın dijital satış danışmanıyım. Projeler, daire tipleri, ödeme planı ve teslim tarihleri hakkında sorabilirsiniz.`,
+          text: `Merhaba, ben ${NAME} 👋 Projeler, daire tipleri, fiyatlar, ödeme planı, teslim tarihleri, tapu süreci ve daha fazlası hakkında sorabilirsiniz.`,
           chips: QUICK_CHIPS,
         },
       ]);
@@ -106,12 +107,19 @@ export function Assistant({ data }: { data: AssistantData }) {
           )}
           aria-label={`${NAME} ile sohbet et`}
         >
-          <span className="relative grid place-items-center h-9 w-9 rounded-full bg-brand shrink-0">
-            <Sparkles size={17} />
+          <span className="relative grid place-items-center h-10 w-10 rounded-full bg-brand shrink-0">
+            <Image
+              src="/brand/logo.png"
+              alt=""
+              width={28}
+              height={21}
+              aria-hidden
+              className="logo-3d h-5 w-auto brightness-0 invert"
+            />
             <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-dark" />
           </span>
           <span className="text-sm font-semibold whitespace-nowrap">
-            {NAME}&apos;e sor
+            {NAME}&apos;a sor
           </span>
         </button>
       )}
@@ -120,7 +128,7 @@ export function Assistant({ data }: { data: AssistantData }) {
       {open && (
         <div
           role="dialog"
-          aria-label={`${NAME} — satış danışmanı`}
+          aria-label={`${NAME} — dijital satış danışmanı`}
           className={cn(
             "fixed z-[60] bg-surface shadow-2xl flex flex-col",
             "inset-x-0 bottom-0 top-auto h-[85dvh] rounded-t-3xl",
@@ -130,14 +138,21 @@ export function Assistant({ data }: { data: AssistantData }) {
         >
           {/* Başlık */}
           <div className="flex items-center gap-3 px-4 py-3.5 bg-dark text-white shrink-0">
-            <span className="relative grid place-items-center h-10 w-10 rounded-full bg-brand shrink-0">
-              <Sparkles size={18} />
+            <span className="relative grid place-items-center h-11 w-11 rounded-full bg-brand shrink-0">
+              <Image
+                src="/brand/logo.png"
+                alt=""
+                width={32}
+                height={24}
+                aria-hidden
+                className="logo-3d h-6 w-auto brightness-0 invert"
+              />
               <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-dark" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-sm leading-tight">{NAME}</p>
               <p className="text-[0.6875rem] text-white/60">
-                Satış Danışmanı · genelde hemen yanıtlar
+                Dijital Satış Danışmanı · genelde hemen yanıtlar
               </p>
             </div>
             <button

@@ -4,7 +4,7 @@ import { canSeePrices } from "./visitor";
 import { formatPrice } from "./utils";
 
 /**
- * "Deniz" — site üzerindeki satış danışmanı asistanı.
+ * "HardworkerAI" — site üzerindeki satış danışmanı asistanı.
  *
  * Cevaplar hazır kalıplardan üretilir; veriler veritabanındaki gerçek
  * projelerden gelir. Fiyat kuralı burada da geçerlidir: ziyaretçi kayıtlı
@@ -12,10 +12,10 @@ import { formatPrice } from "./utils";
  */
 
 export const ASSISTANT = {
-  name: "Deniz",
-  title: "Satış Danışmanı",
+  name: "HardworkerAI",
+  title: "Dijital Satış Danışmanı",
   greeting:
-    "Merhaba, ben Deniz 👋 Hardworker'ın dijital satış danışmanıyım. Projeler, daire tipleri, ödeme planı ve teslim tarihleri hakkında sorabilirsiniz.",
+    "Merhaba, ben HardworkerAI 👋 Projeler, daire tipleri, fiyatlar, ödeme planı, teslim tarihleri, tapu süreci ve daha fazlası hakkında sorabilirsiniz.",
 } as const;
 
 export type AssistantProject = {

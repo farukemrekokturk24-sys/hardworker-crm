@@ -56,7 +56,6 @@ export function PageHero({
 
         {eyebrow && (
           <p className="anim-fade-up inline-flex items-center gap-2 text-white/70 text-[0.6875rem] font-bold tracking-[0.2em] uppercase mb-4">
-            <span className="h-px w-7 bg-brand" />
             {eyebrow}
           </p>
         )}
