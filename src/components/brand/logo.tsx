@@ -38,17 +38,13 @@ export function Logo({
   const inner = (
     <span className={cn("inline-flex items-center gap-3", className)}>
       <Image
-        src="/brand/logo.png"
+        // Koyu zeminde siyah "H" beyaza çevrilmiş sürüm kullanılır; mavi altıgen aynen kalır
+        src={onDark ? "/brand/logo-dark.png" : "/brand/logo.png"}
         alt="Hardworker Construction"
-        width={120}
-        height={90}
+        width={347}
+        height={400}
         priority
-        className={cn(
-          MARK[size],
-          "w-auto object-contain transition-[filter] duration-300",
-          // Logo lacivert; koyu zeminde beyaza çevrilir
-          onDark && "brightness-0 invert"
-        )}
+        className={cn(MARK[size], "w-auto object-contain")}
       />
       {!compact && (
         <span className="flex flex-col leading-none">
@@ -59,7 +55,9 @@ export function Logo({
               onDark ? "text-white" : "text-ink"
             )}
           >
-            HARDWORKER
+            {/* Logodaki gibi H ve W marka mavisinde */}
+            <span className="text-[#0085e3]">H</span>ARD
+            <span className="text-[#0085e3]">W</span>ORKER
           </span>
           <span
             className={cn(

@@ -80,6 +80,31 @@ async function seedUnits(projectId: string, units: SeedUnit[]) {
   }
 }
 
+/**
+ * Emlakçı paneli, veritabanı ilk kez seed edildikten sonra eklendi. Dolu bir
+ * veritabanında seed atlandığı için demo emlakçı hesabı hiç oluşmazdı; burada
+ * yalnızca eksikse eklenir — mevcut kullanıcılara ve lead'lere dokunulmaz.
+ */
+async function ensureDemoBroker() {
+  const email = "emlakci@partner.com";
+  if (await prisma.user.findUnique({ where: { email } })) return;
+  const codeTaken = await prisma.user.findUnique({
+    where: { shareCode: "emre-partner" },
+  });
+  await prisma.user.create({
+    data: {
+      name: "Emre Partner",
+      email,
+      phone: "905337778899",
+      passwordHash: await bcrypt.hash("hardworker2026", 10),
+      role: "BROKER",
+      company: "Partner Emlak",
+      shareCode: codeTaken ? null : "emre-partner",
+    },
+  });
+  console.log(`👤 Demo emlakçı hesabı eklendi: ${email}`);
+}
+
 async function main() {
   // Yayındaki veritabanında seed her dağıtımda yeniden çalışır; veri varsa
   // dokunmayız, aksi hâlde müşterinin bıraktığı lead'ler silinirdi.
@@ -89,6 +114,7 @@ async function main() {
     if (existing > 0) {
       console.log(`↷ Veritabanında ${existing} proje var, seed atlandı.`);
       console.log("  Sıfırlamak için: FORCE_SEED=1 npm run db:seed");
+      await ensureDemoBroker();
       return;
     }
   }
