@@ -109,12 +109,12 @@ export function Assistant({ data }: { data: AssistantData }) {
         >
           <span className="relative grid place-items-center h-10 w-10 rounded-full bg-brand shrink-0">
             <Image
-              src="/brand/logo.png"
+              src="/brand/logo-dark.png"
               alt=""
               width={28}
               height={21}
               aria-hidden
-              className="logo-3d h-5 w-auto brightness-0 invert"
+              className="logo-3d h-5 w-auto"
             />
             <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-dark" />
           </span>
@@ -140,12 +140,12 @@ export function Assistant({ data }: { data: AssistantData }) {
           <div className="flex items-center gap-3 px-4 py-3.5 bg-dark text-white shrink-0">
             <span className="relative grid place-items-center h-11 w-11 rounded-full bg-brand shrink-0">
               <Image
-                src="/brand/logo.png"
+                src="/brand/logo-dark.png"
                 alt=""
                 width={32}
                 height={24}
                 aria-hidden
-                className="logo-3d h-6 w-auto brightness-0 invert"
+                className="logo-3d h-6 w-auto"
               />
               <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-400 ring-2 ring-dark" />
             </span>
