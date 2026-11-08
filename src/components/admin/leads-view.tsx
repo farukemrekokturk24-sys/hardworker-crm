@@ -13,6 +13,7 @@ import {
   LEAD_TEMP_LABELS, LEAD_TEMP_TONE, KANBAN_COLUMNS, LEAD_SOURCES,
 } from "@/lib/constants";
 import { prettyPhone, timeAgo, formatPrice, avatarTone, cn } from "@/lib/utils";
+import { LeadKanban } from "./leads-kanban";
 
 export type LeadRow = {
   id: string;
@@ -343,76 +344,6 @@ function LeadList({
         ))}
       </ul>
     </>
-  );
-}
-
-/* --------------------------------------------------------------- Kanban */
-
-function LeadKanban({ leads }: { leads: LeadRow[] }) {
-  return (
-    <div className="flex gap-3.5 overflow-x-auto thin-scroll pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 max-w-[100vw] sm:max-w-full">
-      {KANBAN_COLUMNS.map((col) => {
-        const items = leads.filter((l) => l.status === col);
-        const color = LEAD_STATUS_COLORS[col];
-        return (
-          <div key={col} className="shrink-0 w-[272px] flex flex-col">
-            <div className="flex items-center gap-2 px-1 pb-2.5">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
-              <h3 className="font-bold text-sm text-ink">{LEAD_STATUS_LABELS[col]}</h3>
-              <span className="ml-auto num text-[0.6875rem] font-bold text-muted bg-surface-2 px-1.5 py-0.5 rounded-full">
-                {items.length}
-              </span>
-            </div>
-
-            <div className="flex-1 space-y-2 rounded-2xl bg-surface-2/60 p-2 min-h-[160px]">
-              {items.length === 0 ? (
-                <p className="text-xs text-muted text-center py-7">Kayıt yok</p>
-              ) : (
-                items.map((l) => (
-                  <Link
-                    key={l.id}
-                    href={`/panel/leadler/${l.id}`}
-                    className="block card p-3 hover:border-brand/40 hover:shadow-sm transition-all"
-                  >
-                    <div className="flex items-start gap-2">
-                      <Avatar name={l.name} size="xs" tone={avatarTone(l.id)} />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-ink text-[0.8125rem] truncate flex items-center gap-1">
-                          {l.name}
-                          {l.temp === "HOT" && (
-                            <Flame size={11} className="text-rose-500 shrink-0" />
-                          )}
-                        </p>
-                        <p className="text-[0.6875rem] text-muted num">
-                          {prettyPhone(l.phone)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {(l.projectName || l.budgetMax) && (
-                      <p className="text-[0.6875rem] text-muted mt-2 truncate">
-                        {l.projectName}
-                        {l.projectName && l.budgetMax && " · "}
-                        {l.budgetMax && formatPrice(l.budgetMax)}
-                      </p>
-                    )}
-
-                    <div className="flex items-center justify-between mt-2.5 pt-2.5 border-t border-border">
-                      <span className="text-[0.625rem] text-muted truncate">
-                        {l.assignedToName ?? "Atanmadı"}
-                      </span>
-                      <span className="text-[0.625rem] text-muted shrink-0">
-                        {timeAgo(l.lastActivityAt)}
-                      </span>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
-        );
-      })}
-    </div>
   );
 }
 

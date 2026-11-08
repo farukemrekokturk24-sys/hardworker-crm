@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { SoldOutBadge } from "./sold-out";
+import { SoldOutBadge, LastUnitsBadge } from "./sold-out";
 import type { ProjectCardData } from "./project-card";
 import { cn } from "@/lib/utils";
 
@@ -68,7 +68,9 @@ export function ProjectFan({ projects }: { projects: ProjectCardData[] }) {
       >
         {projects.map((p, i) => {
           const offset = i - active;
-          const soldOut = p.totalUnits > 0 && p.availableUnits === 0;
+          const noneFree = p.totalUnits > 0 && p.availableUnits === 0;
+          const soldOut = noneFree && p.reservedUnits === 0;
+          const lastUnits = noneFree && p.reservedUnits > 0;
           return (
             <article
               key={p.id}
@@ -96,6 +98,7 @@ export function ProjectFan({ projects }: { projects: ProjectCardData[] }) {
                   )}
                   <span className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/15 to-transparent" />
                   {soldOut && <SoldOutBadge />}
+                  {lastUnits && <LastUnitsBadge count={p.reservedUnits} />}
 
                   <div className="absolute inset-x-0 bottom-0 p-5">
                     <p className="font-display font-bold text-white text-lg leading-tight">
@@ -105,7 +108,11 @@ export function ProjectFan({ projects }: { projects: ProjectCardData[] }) {
                       {[p.district, p.city].filter(Boolean).join(", ")}
                     </p>
                     <p className="flex items-center gap-1.5 text-white text-[0.75rem] font-semibold mt-3">
-                      {soldOut ? "Tamamı satıldı" : `${p.availableUnits} daire satışta`}
+                      {lastUnits
+                        ? `Son ${p.reservedUnits} daire`
+                        : soldOut
+                          ? "Tamamı satıldı"
+                          : `${p.availableUnits} daire satışta`}
                       <ArrowUpRight
                         size={14}
                         className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

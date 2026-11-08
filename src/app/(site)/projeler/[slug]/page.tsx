@@ -13,7 +13,8 @@ import { AppointmentForm } from "@/components/site/appointment-form";
 import { SummaryPrice } from "@/components/site/summary-price";
 import { GatePageContext } from "@/components/site/price-gate";
 import { TourButton, TourCard } from "@/components/site/tour-360";
-import { SoldOutBadge } from "@/components/site/sold-out";
+import { SoldOutBadge, LastUnitsBadge } from "@/components/site/sold-out";
+import { PaymentPlanner } from "@/components/site/payment-planner";
 import { ProjectHeroMedia } from "@/components/site/project-hero-media";
 import { SectionNav } from "@/components/site/project-sections";
 import { WhatsappIcon } from "@/components/brand/social-icons";
@@ -82,7 +83,11 @@ export default async function ProjectDetailPage({ params }: Params) {
   const minPrice = prices.length ? Math.min(...prices) : null;
   const areas = units.map((u) => u.grossArea).filter((v): v is number => !!v);
   const types = [...new Set(units.map((u) => u.type))];
-  const soldOut = units.length > 0 && available.length === 0;
+  const reserved = units.filter((u) => u.status === "RESERVED");
+  // Rezerve daire varken proje tükenmiş sayılmaz.
+  const noneFree = units.length > 0 && available.length === 0;
+  const soldOut = noneFree && reserved.length === 0;
+  const lastUnits = noneFree && reserved.length > 0;
 
   const features = (project.features as string[] | null) ?? [];
   const amenities = (project.amenities as { icon: string; labelTr: string }[] | null) ?? [];
@@ -119,6 +124,7 @@ export default async function ProjectDetailPage({ params }: Params) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-dark/85 via-dark/20 to-dark/10 pointer-events-none" />
             {soldOut && <SoldOutBadge size="lg" />}
+            {lastUnits && <LastUnitsBadge count={reserved.length} size="lg" />}
 
             <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9 pointer-events-none">
               <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -133,6 +139,11 @@ export default async function ProjectDetailPage({ params }: Params) {
                 {available.length > 0 && (
                   <Badge className="!bg-emerald-500/25 !text-emerald-50 !ring-emerald-300/30 !px-3 !py-1.5 !text-xs backdrop-blur">
                     <CheckCircle2 size={12} /> {available.length} daire satışta
+                  </Badge>
+                )}
+                {lastUnits && (
+                  <Badge className="!bg-gold/30 !text-white !ring-gold/40 !px-3 !py-1.5 !text-xs backdrop-blur">
+                    Son {reserved.length} daire · rezerve
                   </Badge>
                 )}
               </div>
@@ -344,6 +355,19 @@ export default async function ProjectDetailPage({ params }: Params) {
                 ))}
               </div>
             )}
+
+            {/* Müşterinin kendi planını kurduğu hesaplayıcı */}
+            <div className="mt-9">
+              <PaymentPlanner
+                basePrice={showPrices ? minPrice : null}
+                hasPrice={minPrice !== null}
+                defaultDownPct={project.downPaymentPct ?? 35}
+                defaultMonths={project.installmentMonths ?? 36}
+                terms={terms}
+                projectId={project.id}
+                projectName={project.name}
+              />
+            </div>
 
             <p className="text-sm text-muted mt-6 bg-surface-2 rounded-xl px-4 py-3.5 leading-relaxed max-w-3xl">
               <strong className="text-ink-soft">Not:</strong> Kira garantisinden

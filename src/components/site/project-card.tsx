@@ -3,7 +3,7 @@ import { MapPin, ArrowUpRight, Building2 } from "lucide-react";
 import { Badge } from "@/components/ui/primitives";
 import { PriceTag } from "./price-gate";
 import { ProjectMedia } from "./project-media";
-import { SoldOutBadge } from "./sold-out";
+import { SoldOutBadge, LastUnitsBadge } from "./sold-out";
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_TONE } from "@/lib/constants";
 import { formatPrice } from "@/lib/utils";
 
@@ -19,6 +19,8 @@ export type ProjectCardData = {
   deliveryLabel: string | null;
   totalUnits: number;
   availableUnits: number;
+  /** Rezerve edilmiş daire sayısı — proje tükenmiş sayılmaz. */
+  reservedUnits: number;
   minPrice: number | null;
   hasPrice: boolean;
   video?: string | null;
@@ -32,7 +34,10 @@ export function ProjectCard({
   project: ProjectCardData;
   priority?: boolean;
 }) {
-  const soldOut = project.totalUnits > 0 && project.availableUnits === 0;
+  // Rezerve daire varsa proje tükenmiş değildir; kıtlık vurgusu yapılır.
+  const noneFree = project.totalUnits > 0 && project.availableUnits === 0;
+  const soldOut = noneFree && project.reservedUnits === 0;
+  const lastUnits = noneFree && project.reservedUnits > 0;
 
   return (
     <article className="group card card-hover overflow-hidden flex flex-col">
@@ -67,6 +72,7 @@ export function ProjectCard({
         </div>
 
         {soldOut && <SoldOutBadge />}
+        {lastUnits && <LastUnitsBadge count={project.reservedUnits} />}
 
         {project.district && (
           <p className="absolute bottom-3.5 left-3.5 flex items-center gap-1.5 text-white text-[0.8125rem] font-semibold drop-shadow">
@@ -132,11 +138,13 @@ export function ProjectCard({
         ) : (
           <div className="mt-5 pt-5 border-t border-border">
             <span className="text-sm text-muted font-medium">
-              {soldOut
-                ? "Tüm daireler satıldı"
-                : project.status === "COMPLETED"
-                  ? "Teslim edildi"
-                  : "Satışa hazırlanıyor"}
+              {lastUnits
+                ? `Son ${project.reservedUnits} daire · rezerve`
+                : soldOut
+                  ? "Tüm daireler satıldı"
+                  : project.status === "COMPLETED"
+                    ? "Teslim edildi"
+                    : "Satışa hazırlanıyor"}
             </span>
           </div>
         )}

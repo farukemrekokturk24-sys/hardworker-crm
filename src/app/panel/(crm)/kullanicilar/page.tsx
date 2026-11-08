@@ -15,7 +15,10 @@ export default async function UsersPage() {
   if (!can(session.role, "*")) redirect("/panel");
 
   const users = await prisma.user.findMany({
-    include: { _count: { select: { assignedLeads: true, deals: true } } },
+    include: {
+      _count: { select: { assignedLeads: true, deals: true } },
+      accountManager: { select: { id: true, name: true } },
+    },
     orderBy: [{ active: "desc" }, { name: "asc" }],
   });
 
@@ -46,12 +49,17 @@ export default async function UsersPage() {
           role: u.role,
           active: u.active,
           shareCode: u.shareCode,
+          accountManagerId: u.accountManagerId,
+          accountManagerName: u.accountManager?.name ?? null,
           lastLogin: u.lastLogin?.toISOString() ?? null,
           leadCount: u._count.assignedLeads,
           dealCount: u._count.deals,
         }))}
         currentUserId={session.uid}
         siteUrl={siteUrl}
+        staffOptions={users
+          .filter((u) => u.active && ["SUPER_ADMIN", "SALES_MANAGER", "AGENT"].includes(u.role))
+          .map((u) => ({ id: u.id, name: u.name }))}
       />
     </div>
   );

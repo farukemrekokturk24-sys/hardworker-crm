@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Users, CalendarDays, Handshake, Building2,
+  LayoutDashboard, Users, CalendarDays, Handshake, Building2, Store,
   Layers, CheckSquare, BarChart3, Settings, Image as ImageIcon,
   MessageSquare, UserCog,
 } from "lucide-react";
@@ -37,6 +37,7 @@ const NAV: {
     section: "Yönetim",
     items: [
       { href: "/panel/raporlar", label: "Raporlar", icon: BarChart3, area: "reports" },
+      { href: "/panel/emlakcilar", label: "Emlakçı Performansı", icon: Store, area: "reports" },
       { href: "/panel/mesajlar", label: "İletişim Mesajları", icon: MessageSquare, area: "leads" },
       { href: "/panel/kullanicilar", label: "Kullanıcılar", icon: UserCog, area: "*" },
       { href: "/panel/ayarlar", label: "Ayarlar", icon: Settings, area: "*" },

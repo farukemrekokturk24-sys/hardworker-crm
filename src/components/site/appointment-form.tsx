@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { CalendarCheck, Loader2, CheckCircle2 } from "lucide-react";
 import { requestAppointment, type RegisterState } from "@/app/(site)/actions";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,13 @@ export function AppointmentForm({
     { ok: false }
   );
 
+  // Tarih sunucuda ve istemcide farklı olabileceği için ilk boyamadan sonra
+  // hesaplanır. Hook'lar koşullu return'den önce gelmek zorunda.
+  const [minDate, setMinDate] = useState("");
+  useEffect(() => {
+    setMinDate(new Date(Date.now() + 86400000).toISOString().slice(0, 10));
+  }, []);
+
   if (state.ok) {
     return (
       <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-center">
@@ -29,8 +36,6 @@ export function AppointmentForm({
       </div>
     );
   }
-
-  const minDate = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
   return (
     <form action={action} className="space-y-3">

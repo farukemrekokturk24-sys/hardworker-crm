@@ -29,6 +29,7 @@ export async function getProjectCards(opts?: {
 
   return projects.map((p) => {
     const available = p.units.filter((u) => u.status === "AVAILABLE");
+    const reserved = p.units.filter((u) => u.status === "RESERVED");
     const prices = available.map((u) => u.price).filter((v): v is number => !!v);
     const min = prices.length ? Math.min(...prices) : null;
     return {
@@ -43,6 +44,7 @@ export async function getProjectCards(opts?: {
       deliveryLabel: p.deliveryLabel,
       totalUnits: p.units.length,
       availableUnits: available.length,
+      reservedUnits: reserved.length,
       minPrice: showPrices ? min : null,
       hasPrice: min !== null,
       video: projectVideo(p.slug)?.video ?? null,

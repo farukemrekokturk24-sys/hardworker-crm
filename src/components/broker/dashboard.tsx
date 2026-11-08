@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import Image from "next/image";
 import {
   Plus, Loader2, Copy, Check, Link2, Users, Trash2, Search,
@@ -168,7 +168,7 @@ function ProjectsTab({
                 <Badge tone="bg-surface-2 text-ink-soft ring-border">
                   <span className="num">{l.clicks}</span> tıklama
                 </Badge>
-                <CopyField url={`${siteUrl}/${l.projectSlug ? `projeler/${l.projectSlug}` : "projeler"}?s=${l.token}`} compact />
+                <CopyField url={`${siteUrl}/s/${l.token}`} compact />
                 <DeleteLink id={l.id} />
               </li>
             ))}
@@ -188,7 +188,12 @@ function ProjectShareCard({
   siteUrl: string;
   shareCode: string | null;
 }) {
-  const url = `${siteUrl}/projeler/${project.slug}${shareCode ? `?ref=${shareCode}` : ""}`;
+  const [tracked, setTracked] = useState<string | null>(null);
+  const [making, startMaking] = useTransition();
+  // Takipli link varsa onu, yoksa genel ref linkini paylaş
+  const url = tracked
+    ? `${siteUrl}/s/${tracked}`
+    : `${siteUrl}/projeler/${project.slug}${shareCode ? `?ref=${shareCode}` : ""}`;
   const soldOut = project.totalUnits > 0 && project.availableUnits === 0;
 
   return (
@@ -227,6 +232,21 @@ function ProjectShareCard({
 
         <div className="mt-auto pt-4 space-y-2">
           <CopyField url={url} full label="Sunum linkini kopyala" />
+          {!tracked && (
+            <button
+              onClick={() =>
+                startMaking(async () => {
+                  const r = await createShareLink(project.id);
+                  if (r.ok) setTracked(r.token);
+                })
+              }
+              disabled={making}
+              className="w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-border text-[0.75rem] font-semibold text-ink-soft hover:border-brand/40 transition-colors disabled:opacity-60"
+            >
+              {making ? <Loader2 size={13} className="animate-spin" /> : <Link2 size={13} />}
+              Takip edilen link oluştur
+            </button>
+          )}
           <div className="flex gap-2">
             <a
               href={`https://wa.me/?text=${encodeURIComponent(
@@ -447,7 +467,12 @@ function CustomersTab({ leads }: { leads: Lead[] }) {
 
 function NoteModal({ lead, onClose }: { lead: Lead; onClose: () => void }) {
   const [state, action, pending] = useActionState<BrokerState, FormData>(addBrokerNote, {});
-  if (state.ok) setTimeout(onClose, 250);
+
+  useEffect(() => {
+    if (!state.ok) return;
+    const t = setTimeout(onClose, 250);
+    return () => clearTimeout(t);
+  }, [state.ok, onClose]);
 
   return (
     <Modal title={`${lead.name} — not ekle`} onClose={onClose}>
@@ -486,7 +511,12 @@ function AddCustomerModal({
     addBrokerCustomer,
     {}
   );
-  if (state.ok) setTimeout(onClose, 250);
+
+  useEffect(() => {
+    if (!state.ok) return;
+    const t = setTimeout(onClose, 250);
+    return () => clearTimeout(t);
+  }, [state.ok, onClose]);
 
   return (
     <Modal title="Müşteri ekle" onClose={onClose}>

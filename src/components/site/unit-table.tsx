@@ -57,10 +57,24 @@ export function UnitTable({
   );
 
   const available = units.filter((u) => u.status === "AVAILABLE").length;
+  const reserved = units.filter((u) => u.status === "RESERVED").length;
 
   return (
     <div>
       <UnlockBanner projectId={projectId} projectName={projectName} className="mb-6" />
+
+      {available === 0 && reserved > 0 && (
+        <div className="mb-6 rounded-2xl border border-gold/30 bg-gold-50 px-5 py-4">
+          <p className="font-bold text-ink">
+            Son {reserved} daire — şu an rezerve
+          </p>
+          <p className="text-sm text-ink-soft mt-1 leading-relaxed">
+            Bu projede satışa açık daire kalmadı; kalan {reserved} daire rezerve
+            durumda. Rezervasyon düşerse size haber verebiliriz — bizimle iletişime
+            geçin.
+          </p>
+        </div>
+      )}
 
       {/* Filtreler */}
       <div className="flex flex-wrap items-center gap-2 mb-5 max-w-full">

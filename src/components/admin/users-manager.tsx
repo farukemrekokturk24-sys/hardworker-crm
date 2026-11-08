@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useState, useTransition, useEffect } from "react";
 import {
   Plus, Loader2, X, UserPlus, Power, Pencil, Trash2, Check, Link2, Copy,
 } from "lucide-react";
@@ -21,6 +21,8 @@ export type ManagedUser = {
   role: string;
   active: boolean;
   shareCode: string | null;
+  accountManagerId: string | null;
+  accountManagerName: string | null;
   lastLogin: string | null;
   leadCount: number;
   dealCount: number;
@@ -39,10 +41,13 @@ export function UsersManager({
   users,
   currentUserId,
   siteUrl,
+  staffOptions,
 }: {
   users: ManagedUser[];
   currentUserId: string;
   siteUrl: string;
+  /** Emlakçıya sorumlu atanabilecek şirket içi personel */
+  staffOptions: { id: string; name: string }[];
 }) {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<ManagedUser | null>(null);
@@ -66,7 +71,7 @@ export function UsersManager({
             subtitle="Şirket içi ekip üyesi ya da dış emlakçı ekleyin."
           />
           <div className="p-5">
-            <UserForm mode="create" onDone={() => setShowForm(false)} />
+            <UserForm mode="create" staffOptions={staffOptions} onDone={() => setShowForm(false)} />
           </div>
         </Card>
       )}
@@ -87,10 +92,11 @@ export function UsersManager({
         onEdit={setEditing}
         siteUrl={siteUrl}
         showShare
+        showManager
       />
 
       {editing && (
-        <EditModal user={editing} onClose={() => setEditing(null)} />
+        <EditModal user={editing} staffOptions={staffOptions} onClose={() => setEditing(null)} />
       )}
     </div>
   );
@@ -104,6 +110,7 @@ function UserTable({
   onEdit,
   siteUrl,
   showShare,
+  showManager,
 }: {
   title: string;
   subtitle?: string;
@@ -112,6 +119,7 @@ function UserTable({
   onEdit: (u: ManagedUser) => void;
   siteUrl: string;
   showShare?: boolean;
+  showManager?: boolean;
 }) {
   if (users.length === 0) {
     return (
@@ -131,6 +139,7 @@ function UserTable({
             <tr>
               <th>Kullanıcı</th>
               <th>Rol</th>
+              {showManager && <th>Sorumlu danışman</th>}
               {showShare && <th>Sunum linki</th>}
               <th>Lead</th>
               <th>Satış</th>
@@ -162,6 +171,22 @@ function UserTable({
                 <td>
                   <Badge tone={ROLE_TONE[u.role]}>{ROLE_LABELS[u.role] ?? u.role}</Badge>
                 </td>
+                {showManager && (
+                  <td className="text-[0.8125rem]">
+                    {u.accountManagerName ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Avatar
+                          name={u.accountManagerName}
+                          size="xs"
+                          tone={avatarTone(u.accountManagerId ?? u.id)}
+                        />
+                        <span className="text-ink-soft">{u.accountManagerName}</span>
+                      </span>
+                    ) : (
+                      <span className="text-amber-600 font-medium text-xs">Atanmadı</span>
+                    )}
+                  </td>
+                )}
                 {showShare && (
                   <td>
                     {u.shareCode ? (
@@ -281,7 +306,15 @@ function DeleteUser({ id, name }: { id: string; name: string }) {
   );
 }
 
-function EditModal({ user, onClose }: { user: ManagedUser; onClose: () => void }) {
+function EditModal({
+  user,
+  staffOptions,
+  onClose,
+}: {
+  user: ManagedUser;
+  staffOptions: { id: string; name: string }[];
+  onClose: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-dark/50 backdrop-blur-sm anim-fade" onClick={onClose} />
@@ -300,7 +333,7 @@ function EditModal({ user, onClose }: { user: ManagedUser; onClose: () => void }
           </button>
         </div>
         <div className="p-5">
-          <UserForm mode="edit" user={user} onDone={onClose} />
+          <UserForm mode="edit" user={user} staffOptions={staffOptions} onDone={onClose} />
         </div>
       </div>
     </div>
@@ -310,17 +343,24 @@ function EditModal({ user, onClose }: { user: ManagedUser; onClose: () => void }
 function UserForm({
   mode,
   user,
+  staffOptions,
   onDone,
 }: {
   mode: "create" | "edit";
   user?: ManagedUser;
+  staffOptions: { id: string; name: string }[];
   onDone: () => void;
 }) {
   const action = mode === "create" ? createUser : updateUser;
   const [state, formAction, pending] = useActionState<ActionState, FormData>(action, {});
   const [role, setRole] = useState(user?.role ?? "AGENT");
 
-  if (state.ok) setTimeout(onDone, 250);
+  // Başarıdan sonra formu kapat — render sırasında değil, efekt içinde.
+  useEffect(() => {
+    if (!state.ok) return;
+    const t = setTimeout(onDone, 250);
+    return () => clearTimeout(t);
+  }, [state.ok, onDone]);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -357,9 +397,26 @@ function UserForm({
       </div>
 
       {role === "BROKER" && (
-        <Field label="Bağlı olduğu ofis / firma" hint="Emlakçı listesinde görünür.">
-          <input name="company" defaultValue={user?.company ?? ""} className={inputClass} />
-        </Field>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Field label="Bağlı olduğu ofis / firma" hint="Emlakçı listesinde görünür.">
+            <input name="company" defaultValue={user?.company ?? ""} className={inputClass} />
+          </Field>
+          <Field
+            label="Sorumlu satış danışmanı"
+            hint="Bu acenteden sorumlu şirket içi kişi."
+          >
+            <select
+              name="accountManagerId"
+              defaultValue={user?.accountManagerId ?? ""}
+              className={selectClass}
+            >
+              <option value="">Atanmadı</option>
+              {staffOptions.map((o) => (
+                <option key={o.id} value={o.id}>{o.name}</option>
+              ))}
+            </select>
+          </Field>
+        </div>
       )}
 
       <Field

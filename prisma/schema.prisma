@@ -32,6 +32,9 @@ model User {
   shareCode    String?   @unique
   /// Emlakçının bağlı olduğu ofis/firma
   company      String?
+  /// Bu emlakçıdan sorumlu şirket içi satış danışmanı
+  accountManagerId String?
+  accountManager   User?   @relation("BrokerAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -50,6 +53,8 @@ model User {
   /// Bu emlakçının getirdiği müşteriler
   referredLeads   Lead[]              @relation("LeadReferrer")
   shareLinks      ShareLink[]
+  /// Sorumlusu olduğu emlakçılar
+  managedBrokers  User[]              @relation("BrokerAccountManager")
 }
 
 // ============================================================================

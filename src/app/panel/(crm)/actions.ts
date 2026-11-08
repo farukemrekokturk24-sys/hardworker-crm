@@ -610,6 +610,8 @@ export async function createUser(
       name, email,
       phone: String(formData.get("phone") ?? "") || null,
       company: String(formData.get("company") ?? "") || null,
+      accountManagerId:
+        role === "BROKER" ? String(formData.get("accountManagerId") ?? "") || null : null,
       passwordHash: await hashPassword(password),
       role,
       // Emlakçılar sunum linkini bu kodla üretir
@@ -663,6 +665,8 @@ export async function updateUser(
     role,
     phone: String(formData.get("phone") ?? "") || null,
     company: String(formData.get("company") ?? "") || null,
+    accountManagerId:
+      role === "BROKER" ? String(formData.get("accountManagerId") ?? "") || null : null,
   };
 
   // Şifre yalnızca doldurulduysa değişir

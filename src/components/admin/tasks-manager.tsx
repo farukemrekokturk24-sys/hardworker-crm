@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState, useTransition } from "react";
+import { useActionState, useMemo, useState, useTransition, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Loader2, Trash2, CheckSquare, Square, AlertCircle, X } from "lucide-react";
 import { Card, CardHeader, Badge, EmptyState, Field, inputClass, textareaClass, selectClass } from "@/components/ui/primitives";
@@ -227,7 +227,11 @@ function NewTaskForm({
 }) {
   const [state, action, pending] = useActionState<ActionState, FormData>(createTask, {});
 
-  if (state.ok) setTimeout(onDone, 200);
+  useEffect(() => {
+    if (!state.ok) return;
+    const t = setTimeout(onDone, 200);
+    return () => clearTimeout(t);
+  }, [state.ok, onDone]);
 
   return (
     <form action={action} className="space-y-4">
