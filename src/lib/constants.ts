@@ -8,6 +8,7 @@ export const BRAND = {
   phone: "+90 548 840 80 80",
   phone2: "+90 546 996 80 80",
   phoneRaw: "905488408080",
+  phone2Raw: "905469968080",
   whatsapp: "905469968080",
   email: "info@hardworkercyprus.com",
   address: "İsmet İnönü Bulvarı, Salamis Yolu No:55, Access Butik Yanı, Gazimağusa / KKTC",

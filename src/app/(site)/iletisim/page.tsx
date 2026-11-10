@@ -59,7 +59,7 @@ export default async function ContactPage() {
                         {BRAND.phone}
                       </a>
                       <a
-                        href="tel:905469998080"
+                        href={`tel:${BRAND.phone2Raw}`}
                         className="text-muted hover:text-brand transition-colors num"
                       >
                         {BRAND.phone2}

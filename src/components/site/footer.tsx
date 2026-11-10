@@ -88,7 +88,7 @@ export async function Footer({
                   <a href={`tel:${BRAND.phoneRaw}`} className="hover:text-white transition-colors">
                     {BRAND.phone}
                   </a>
-                  <a href="tel:905469998080" className="hover:text-white transition-colors">
+                  <a href={`tel:${BRAND.phone2Raw}`} className="hover:text-white transition-colors">
                     {BRAND.phone2}
                   </a>
                 </span>

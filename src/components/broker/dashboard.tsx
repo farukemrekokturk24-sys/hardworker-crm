@@ -7,6 +7,7 @@ import {
   Phone, Building2, X, ExternalLink, MessageSquare,
 } from "lucide-react";
 import { Card, CardHeader, Badge, EmptyState, Avatar, Field, inputClass, selectClass, textareaClass } from "@/components/ui/primitives";
+import { SoldOutBadge, LastUnitsBadge } from "@/components/site/sold-out";
 import { Button } from "@/components/ui/button";
 import { WhatsappIcon } from "@/components/brand/social-icons";
 import {
@@ -28,7 +29,7 @@ type Lead = {
 type Project = {
   id: string; slug: string; name: string; location: string;
   coverImage: string | null; deliveryLabel: string | null; status: string;
-  availableUnits: number; totalUnits: number;
+  availableUnits: number; reservedUnits: number; totalUnits: number;
 };
 type ShareLink = {
   id: string; token: string; label: string | null;
@@ -194,7 +195,10 @@ function ProjectShareCard({
   const url = tracked
     ? `${siteUrl}/s/${tracked}`
     : `${siteUrl}/projeler/${project.slug}${shareCode ? `?ref=${shareCode}` : ""}`;
-  const soldOut = project.totalUnits > 0 && project.availableUnits === 0;
+  // Siteyle aynı kural: rezerve daire varsa proje tükenmiş sayılmaz.
+  const noneFree = project.totalUnits > 0 && project.availableUnits === 0;
+  const soldOut = noneFree && project.reservedUnits === 0;
+  const lastUnits = noneFree && project.reservedUnits > 0;
 
   return (
     <Card hover className="overflow-hidden flex flex-col">
@@ -208,13 +212,8 @@ function ProjectShareCard({
             className="object-cover"
           />
         )}
-        {soldOut && (
-          <span className="absolute inset-0 grid place-items-center bg-dark/45">
-            <span className="-rotate-[8deg] rounded-lg bg-[var(--danger)] px-4 py-2 font-display text-base font-extrabold uppercase tracking-[0.16em] text-white ring-4 ring-white/25">
-              Sold Out
-            </span>
-          </span>
-        )}
+        {soldOut && <SoldOutBadge />}
+        {lastUnits && <LastUnitsBadge count={project.reservedUnits} />}
       </div>
 
       <div className="p-5 flex flex-col flex-1">

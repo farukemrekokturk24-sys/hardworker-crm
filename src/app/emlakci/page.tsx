@@ -104,6 +104,7 @@ export default async function BrokerHome() {
           deliveryLabel: p.deliveryLabel,
           status: p.status,
           availableUnits: p.units.filter((u) => u.status === "AVAILABLE").length,
+          reservedUnits: p.units.filter((u) => u.status === "RESERVED").length,
           totalUnits: p.units.length,
         }))}
         links={links.map((l) => ({
