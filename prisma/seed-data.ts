@@ -156,6 +156,29 @@ export const PLATINIUM_UNITS: SeedUnit[] = [
   { unitNo: "14", type: "2+1", definition: "PENTHOUSE", floor: "5. Kat", floorNo: 5, grossArea: 102, terraceArea: 44, facing: "Doğu/Kuzeydoğu/Güneydoğu", price: 149900, status: "AVAILABLE" },
 ];
 
+// ---------------------------------------------------------------------------
+// SUNRISE PREMIUM — 5 kat, 12 daire (CityMall civarı, Gazimağusa)
+// Kaynak: SUNRISE PREMIUM/PRICE LIST — teslim Ağustos 2028, tamamı satışta.
+// ---------------------------------------------------------------------------
+
+export const PREMIUM_UNITS: SeedUnit[] = [
+  { unitNo: "1", type: "3+1", definition: "FLAT", floor: "1. Kat", floorNo: 1, grossArea: 123, facing: "Batı/Kuzeybatı/Güneybatı", price: 134900, status: "AVAILABLE" },
+  { unitNo: "2", type: "3+1", definition: "FLAT", floor: "1. Kat", floorNo: 1, grossArea: 123, facing: "Doğu/Kuzeydoğu/Güneydoğu", price: 134900, status: "AVAILABLE" },
+  { unitNo: "3", type: "3+1", definition: "FLAT", floor: "2. Kat", floorNo: 2, grossArea: 123, facing: "Batı/Kuzeybatı/Güneybatı", price: 134900, status: "AVAILABLE" },
+  { unitNo: "4", type: "3+1", definition: "FLAT", floor: "2. Kat", floorNo: 2, grossArea: 123, facing: "Doğu/Kuzeydoğu/Güneydoğu", price: 134900, status: "AVAILABLE" },
+  { unitNo: "5", type: "2+1", definition: "FLAT", floor: "3. Kat", floorNo: 3, grossArea: 78, facing: "Batı/Güneybatı", price: 91900, status: "AVAILABLE" },
+  { unitNo: "6", type: "2+1", definition: "FLAT", floor: "3. Kat", floorNo: 3, grossArea: 87.3, facing: "Kuzey/Kuzeybatı/Kuzeydoğu", price: 96900, status: "AVAILABLE" },
+  { unitNo: "7", type: "1+1", definition: "FLAT", floor: "3. Kat", floorNo: 3, grossArea: 63.3, facing: "Güney/Güneydoğu", price: 74900, status: "AVAILABLE" },
+  // Fiyat listesinde 8 no'lu daire için cephe "W/SE - B/GB" yazıyor; Türkçe
+  // karşılığı (B/GB) ve aynı konumdaki 5 no'lu daire Batı/Güneybatı olduğu için
+  // İngilizce sütundaki "SE" yazım hatası kabul edildi.
+  { unitNo: "8", type: "2+1", definition: "FLAT", floor: "4. Kat", floorNo: 4, grossArea: 78, facing: "Batı/Güneybatı", price: 91900, status: "AVAILABLE" },
+  { unitNo: "9", type: "2+1", definition: "FLAT", floor: "4. Kat", floorNo: 4, grossArea: 87.3, facing: "Kuzey/Kuzeybatı/Kuzeydoğu", price: 96900, status: "AVAILABLE" },
+  { unitNo: "10", type: "1+1", definition: "FLAT", floor: "4. Kat", floorNo: 4, grossArea: 63.3, facing: "Güney/Güneydoğu", price: 74900, status: "AVAILABLE" },
+  { unitNo: "11", type: "2+1", definition: "PENTHOUSE", floor: "5. Kat", floorNo: 5, grossArea: 102, terraceArea: 44, facing: "Batı/Kuzeybatı/Güneybatı", price: 134900, status: "AVAILABLE" },
+  { unitNo: "12", type: "2+1", definition: "PENTHOUSE", floor: "5. Kat", floorNo: 5, grossArea: 102, terraceArea: 44, facing: "Doğu/Kuzeydoğu/Güneydoğu", price: 134900, status: "AVAILABLE" },
+];
+
 export const BEDROOMS = bed;
 
 // ---------------------------------------------------------------------------

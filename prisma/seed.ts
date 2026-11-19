@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import fs from "node:fs";
 import path from "node:path";
 import {
-  LUXERA_UNITS, DIAMOND_UNITS, GOLD_UNITS, PLATINIUM_UNITS,
+  LUXERA_UNITS, DIAMOND_UNITS, GOLD_UNITS, PLATINIUM_UNITS, PREMIUM_UNITS,
   SPECIAL_TERMS, PAYMENT_NOTE, BEDROOMS, type SeedUnit,
 } from "./seed-data";
 
@@ -85,6 +85,70 @@ async function seedUnits(projectId: string, units: SeedUnit[]) {
  * veritabanında seed atlandığı için demo emlakçı hesabı hiç oluşmazdı; burada
  * yalnızca eksikse eklenir — mevcut kullanıcılara ve lead'lere dokunulmaz.
  */
+/** Tüm projelerde ortak olanak listesi. */
+const COMMON_AMENITIES = [
+  { icon: "waves", labelTr: "Açık Yüzme Havuzu" },
+  { icon: "dumbbell", labelTr: "Fitness Salonu" },
+  { icon: "shield", labelTr: "7/24 Güvenlik" },
+  { icon: "car", labelTr: "Otopark" },
+  { icon: "trees", labelTr: "Peyzaj Alanları" },
+  { icon: "zap", labelTr: "Jeneratör" },
+];
+
+/** Sunrise Premium'un proje alanları — hem ilk seed hem ensure tarafından kullanılır. */
+function PREMIUM_DATA(imgs: ReturnType<typeof readImages>) {
+  return {
+    slug: "sunrise-premium",
+
+    name: "Sunrise Premium",
+    tagline: "CityMall'un yanı başında yeni nesil yaşam",
+    descriptionTr:
+      "Sunrise Premium, Gazimağusa'da CityMall AVM'nin hemen yakınında, Lefkoşa–Mağusa ana yoluna paralel konumda yükselen 5 katlı bir apartman projesidir. 12 bağımsız bölümde 1+1, 2+1 ve 3+1 daire seçenekleri ile çatı katında 44 m² terasa sahip penthouse daireler yer alır. Her kat, dairelerin birden fazla cephe alması gözetilerek planlanmış; gün ışığı ve doğal havalandırma tasarımın çıkış noktası olmuştur. Alışveriş merkezi, okullar ve ana ulaşım aksı yürüme mesafesindedir.",
+    status: "ONGOING",
+    featured: true,
+    published: true,
+    city: "Gazimağusa",
+    district: "Merkez",
+    lat: 35.1264,
+    lng: 33.9387,
+    deliveryDate: new Date("2028-08-01"),
+    deliveryLabel: "Ağustos 2028",
+    coverImage: pickCover(imgs),
+    heroImage: imgs.find((i) => i.category === "exterior")?.url ?? null,
+    downPaymentPct: 35,
+    installmentMonths: 36,
+    paymentTermsTr: "%35 peşinat, kalan tutar 36 ay vade ile ödenebilir.",
+    specialTerms: SPECIAL_TERMS,
+    features: [
+      "12 bağımsız bölüm, 5 kat",
+      "1+1, 2+1 ve 3+1 daire seçenekleri",
+      "Çatı katında 44 m² teraslı penthouse",
+      "Çok cepheli daire yerleşimi",
+      "CityMall AVM'ye yürüme mesafesi",
+      "Lefkoşa–Mağusa ana yoluna yakın",
+    ],
+    amenities: COMMON_AMENITIES,
+    seoTitle: "Sunrise Premium — Gazimağusa CityMall Yakını Satılık Daireler",
+    seoDescription:
+      "Sunrise Premium projesinde 1+1, 2+1 ve 3+1 satılık daireler ile teraslı penthouse seçenekleri. Teslim Ağustos 2028, %35 peşinat ve 36 ay vade.",
+    order: 2,
+  };
+}
+
+async function ensureSunrisePremium() {
+  const slug = "sunrise-premium";
+  if (await prisma.project.findUnique({ where: { slug } })) return;
+
+  const imgs = readImages(slug);
+  const p = await prisma.project.create({ data: PREMIUM_DATA(imgs) });
+  await seedUnits(p.id, PREMIUM_UNITS);
+  if (imgs.length)
+    await prisma.projectImage.createMany({
+      data: imgs.map((i) => ({ ...i, projectId: p.id })),
+    });
+  console.log(`🏗  Sunrise Premium eklendi (${PREMIUM_UNITS.length} daire, ${imgs.length} görsel)`);
+}
+
 async function ensureDemoBroker() {
   const email = "emlakci@partner.com";
   if (await prisma.user.findUnique({ where: { email } })) return;
@@ -115,6 +179,7 @@ async function main() {
       console.log(`↷ Veritabanında ${existing} proje var, seed atlandı.`);
       console.log("  Sıfırlamak için: FORCE_SEED=1 npm run db:seed");
       await ensureDemoBroker();
+      await ensureSunrisePremium();
       return;
     }
   }
@@ -197,15 +262,6 @@ async function main() {
 
   // ------------------------------------------------------------------ Projeler
   console.log("🏗  Projeler ve envanter...");
-
-  const COMMON_AMENITIES = [
-    { icon: "waves", labelTr: "Açık Yüzme Havuzu" },
-    { icon: "dumbbell", labelTr: "Fitness Salonu" },
-    { icon: "shield", labelTr: "7/24 Güvenlik" },
-    { icon: "car", labelTr: "Otopark" },
-    { icon: "trees", labelTr: "Peyzaj Alanları" },
-    { icon: "zap", labelTr: "Jeneratör" },
-  ];
 
   // --- Luxera Salamis
   const luxeraImgs = readImages("luxera-salamis");
@@ -311,6 +367,18 @@ async function main() {
   if (platImgs.length)
     await prisma.projectImage.createMany({
       data: platImgs.map((i) => ({ ...i, projectId: platinium.id })),
+    });
+
+  // --- Sunrise Premium
+  const premImgs = readImages("sunrise-premium");
+  const premium = await prisma.project.create({
+    data: {
+      ...PREMIUM_DATA(premImgs),    },
+  });
+  await seedUnits(premium.id, PREMIUM_UNITS);
+  if (premImgs.length)
+    await prisma.projectImage.createMany({
+      data: premImgs.map((i) => ({ ...i, projectId: premium.id })),
     });
 
   // --- Sunrise Diamond
