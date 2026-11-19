@@ -16,6 +16,7 @@ type Broker = {
   id: string; name: string; company: string | null; email: string;
   phone: string | null; active: boolean; shareCode: string | null;
   accountManagerName: string | null;
+  introducedByName: string | null;
   leadCount: number; won: number; lost: number; revenue: number;
   links: LinkRow[];
   byProject: { projectId: string; name: string; leads: number }[];
@@ -138,6 +139,7 @@ export function BrokerPerformance({
               <tr>
                 <th className="w-10"></th>
                 <th>Acente</th>
+                <th>Getiren</th>
                 <th>Sorumlu</th>
                 <th>Link</th>
                 <th>Açılma</th>
@@ -182,6 +184,9 @@ export function BrokerPerformance({
                           </p>
                         </div>
                       </div>
+                    </td>
+                    <td className="text-[0.8125rem] text-ink-soft">
+                      {b.introducedByName ?? <span className="text-muted text-xs">—</span>}
                     </td>
                     <td className="text-[0.8125rem]">
                       {b.accountManagerName ?? (

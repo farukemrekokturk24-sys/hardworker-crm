@@ -16,6 +16,7 @@ export default async function BrokerPerformancePage() {
     where: { role: "BROKER" },
     include: {
       accountManager: { select: { id: true, name: true } },
+      introducedBy: { select: { id: true, name: true } },
       shareLinks: {
         include: { project: { select: { id: true, name: true, slug: true } } },
         orderBy: { clicks: "desc" },
@@ -70,6 +71,7 @@ export default async function BrokerPerformancePage() {
             active: b.active,
             shareCode: b.shareCode,
             accountManagerName: b.accountManager?.name ?? null,
+            introducedByName: b.introducedBy?.name ?? null,
             leadCount: b.referredLeads.length,
             won,
             lost,

@@ -23,6 +23,8 @@ export type ManagedUser = {
   shareCode: string | null;
   accountManagerId: string | null;
   accountManagerName: string | null;
+  introducedById: string | null;
+  introducedByName: string | null;
   lastLogin: string | null;
   leadCount: number;
   dealCount: number;
@@ -139,6 +141,7 @@ function UserTable({
             <tr>
               <th>Kullanıcı</th>
               <th>Rol</th>
+              {showManager && <th>Getiren</th>}
               {showManager && <th>Sorumlu danışman</th>}
               {showShare && <th>Sunum linki</th>}
               <th>Lead</th>
@@ -171,6 +174,22 @@ function UserTable({
                 <td>
                   <Badge tone={ROLE_TONE[u.role]}>{ROLE_LABELS[u.role] ?? u.role}</Badge>
                 </td>
+                {showManager && (
+                  <td className="text-[0.8125rem]">
+                    {u.introducedByName ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Avatar
+                          name={u.introducedByName}
+                          size="xs"
+                          tone={avatarTone(u.introducedById ?? u.id)}
+                        />
+                        <span className="text-ink-soft">{u.introducedByName}</span>
+                      </span>
+                    ) : (
+                      <span className="text-muted text-xs">—</span>
+                    )}
+                  </td>
+                )}
                 {showManager && (
                   <td className="text-[0.8125rem]">
                     {u.accountManagerName ? (
@@ -397,13 +416,28 @@ function UserForm({
       </div>
 
       {role === "BROKER" && (
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           <Field label="Bağlı olduğu ofis / firma" hint="Emlakçı listesinde görünür.">
             <input name="company" defaultValue={user?.company ?? ""} className={inputClass} />
           </Field>
           <Field
+            label="Acenteyi getiren"
+            hint="Bu acenteyi şirkete kazandıran kişi."
+          >
+            <select
+              name="introducedById"
+              defaultValue={user?.introducedById ?? ""}
+              className={selectClass}
+            >
+              <option value="">Belirtilmedi</option>
+              {staffOptions.map((o) => (
+                <option key={o.id} value={o.id}>{o.name}</option>
+              ))}
+            </select>
+          </Field>
+          <Field
             label="Sorumlu satış danışmanı"
-            hint="Bu acenteden sorumlu şirket içi kişi."
+            hint="Acenteyle gündelik ilgilenen kişi."
           >
             <select
               name="accountManagerId"

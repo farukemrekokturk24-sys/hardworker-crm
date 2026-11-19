@@ -35,6 +35,9 @@ model User {
   /// Bu emlakçıdan sorumlu şirket içi satış danışmanı
   accountManagerId String?
   accountManager   User?   @relation("BrokerAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
+  /// Acenteyi şirkete kazandıran şirket içi kişi
+  introducedById   String?
+  introducedBy     User?   @relation("BrokerIntroducer", fields: [introducedById], references: [id], onDelete: SetNull)
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -55,6 +58,8 @@ model User {
   shareLinks      ShareLink[]
   /// Sorumlusu olduğu emlakçılar
   managedBrokers  User[]              @relation("BrokerAccountManager")
+  /// Şirkete kazandırdığı emlakçılar
+  introducedBrokers User[]            @relation("BrokerIntroducer")
 }
 
 // ============================================================================

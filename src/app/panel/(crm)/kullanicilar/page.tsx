@@ -18,6 +18,7 @@ export default async function UsersPage() {
     include: {
       _count: { select: { assignedLeads: true, deals: true } },
       accountManager: { select: { id: true, name: true } },
+      introducedBy: { select: { id: true, name: true } },
     },
     orderBy: [{ active: "desc" }, { name: "asc" }],
   });
@@ -51,6 +52,8 @@ export default async function UsersPage() {
           shareCode: u.shareCode,
           accountManagerId: u.accountManagerId,
           accountManagerName: u.accountManager?.name ?? null,
+          introducedById: u.introducedById,
+          introducedByName: u.introducedBy?.name ?? null,
           lastLogin: u.lastLogin?.toISOString() ?? null,
           leadCount: u._count.assignedLeads,
           dealCount: u._count.deals,
