@@ -85,7 +85,21 @@ async function seedUnits(projectId: string, units: SeedUnit[]) {
  * veritabanında seed atlandığı için demo emlakçı hesabı hiç oluşmazdı; burada
  * yalnızca eksikse eklenir — mevcut kullanıcılara ve lead'lere dokunulmaz.
  */
-/** Tüm projelerde ortak olanak listesi. */
+/**
+ * Tüm apartman projelerinde standart olan bina donanımı.
+ * Sunrise projelerinin olanak listesi yalnızca bunlardan oluşur.
+ */
+const APARTMENT_AMENITIES = [
+  { icon: "wifi", labelTr: "Merkezi İnternet" },
+  { icon: "wind", labelTr: "Klima Altyapısı" },
+  { icon: "satellite-dish", labelTr: "Merkezi Uydu Sistemi" },
+  { icon: "door-closed", labelTr: "Çelik Giriş Kapıları" },
+  { icon: "layers", labelTr: "Asma Tavan" },
+  { icon: "arrow-up-down", labelTr: "Asansör" },
+  { icon: "clipboard-list", labelTr: "Apartman Yönetimi" },
+];
+
+/** Site ölçeğindeki projelerin sosyal alanları (yalnızca Luxera Salamis). */
 const COMMON_AMENITIES = [
   { icon: "waves", labelTr: "Açık Yüzme Havuzu" },
   { icon: "dumbbell", labelTr: "Fitness Salonu" },
@@ -127,7 +141,7 @@ function PREMIUM_DATA(imgs: ReturnType<typeof readImages>) {
       "CityMall AVM'ye yürüme mesafesi",
       "Lefkoşa–Mağusa ana yoluna yakın",
     ],
-    amenities: COMMON_AMENITIES,
+    amenities: APARTMENT_AMENITIES,
     seoTitle: "Sunrise Premium — Gazimağusa CityMall Yakını Satılık Daireler",
     seoDescription:
       "Sunrise Premium projesinde 1+1, 2+1 ve 3+1 satılık daireler ile teraslı penthouse seçenekleri. Teslim Ağustos 2028, %35 peşinat ve 36 ay vade.",
@@ -310,6 +324,7 @@ async function main() {
         { icon: "sparkles", labelTr: "Spa & Masaj" },
         { icon: "flame", labelTr: "Sauna" },
         { icon: "baby", labelTr: "Çocuk Oyun Alanı" },
+        ...APARTMENT_AMENITIES,
       ],
       seoTitle: "Luxera Salamis — Gazimağusa Salamis'te Satılık Daireler",
       seoDescription:
@@ -356,7 +371,7 @@ async function main() {
         "Merkezi konum",
         "Kapalı otopark",
       ],
-      amenities: COMMON_AMENITIES,
+      amenities: APARTMENT_AMENITIES,
       seoTitle: "Sunrise Platinium — Gazimağusa Merkezde Satılık Daireler",
       seoDescription:
         "Sunrise Platinium projesinde 2+1 ve 3+1 satılık daireler, teraslı penthouse seçenekleri. %35 peşinat, 36 ay vade.",
@@ -413,7 +428,7 @@ async function main() {
         "Butik ölçekli apartman",
         "Merkezi konum",
       ],
-      amenities: COMMON_AMENITIES.slice(0, 4),
+      amenities: APARTMENT_AMENITIES,
       seoTitle: "Sunrise Diamond — Gazimağusa Satılık Daireler",
       seoDescription:
         "Sunrise Diamond projesinde son penthouse fırsatı. 2+1 ve 3+1 daireler, %35 peşinat ve 36 ay vade.",
@@ -452,7 +467,7 @@ async function main() {
         "Zamanında teslim edildi",
         "Tamamı satıldı",
       ],
-      amenities: COMMON_AMENITIES.slice(0, 4),
+      amenities: APARTMENT_AMENITIES,
       seoTitle: "Sunrise Gold — Teslim Edilen Proje | Hardworker Construction",
       seoDescription:
         "Sunrise Gold, 2024'te zamanında teslim edilen 9 daireli referans projemiz.",
