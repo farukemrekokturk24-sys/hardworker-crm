@@ -41,12 +41,16 @@ export default async function BrokerLayout({
             >
               <Building2 size={15} /> Projeler <ExternalLink size={12} />
             </Link>
-            <span className="flex items-center gap-2.5 h-10 pl-1.5 pr-3 rounded-xl">
+            <Link
+              href="/emlakci/hesabim"
+              className="flex items-center gap-2.5 h-10 pl-1.5 pr-3 rounded-xl hover:bg-surface-2 transition-colors"
+              title="Hesabım ve şifre"
+            >
               <Avatar name={user.name} size="sm" tone={avatarTone(user.uid)} />
               <span className="hidden sm:block text-[0.8125rem] font-semibold text-ink truncate max-w-[140px]">
                 {user.name}
               </span>
-            </span>
+            </Link>
             <form action={logoutAction}>
               <button
                 type="submit"

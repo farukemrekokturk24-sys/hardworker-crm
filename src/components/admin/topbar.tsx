@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, LogOut, ChevronDown, Bell, Search } from "lucide-react";
+import { Menu, LogOut, ChevronDown, Bell, Search, UserCircle } from "lucide-react";
 import { logoutAction } from "@/app/panel/(crm)/actions";
 import { Avatar } from "@/components/ui/primitives";
 import { ROLE_LABELS } from "@/lib/constants";
@@ -78,6 +78,13 @@ export function Topbar({
                 <p className="font-semibold text-ink text-sm truncate">{user.name}</p>
                 <p className="text-xs text-muted truncate">{user.email}</p>
               </div>
+              <Link
+                href="/panel/hesabim"
+                onClick={() => setOpen(false)}
+                className="w-full flex items-center gap-2.5 px-3 h-9 rounded-lg text-sm font-medium text-ink-soft hover:bg-surface-2 transition-colors"
+              >
+                <UserCircle size={16} /> Hesabım
+              </Link>
               <form action={logoutAction}>
                 <button
                   type="submit"
